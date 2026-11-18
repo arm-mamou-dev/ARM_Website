@@ -544,3 +544,7 @@ input::placeholder { color: #a3a9b5; font-style: italic; }
 .t-history { margin: 28px 0 10px; }
 .t-msg { white-space: pre-line; min-width: 240px; }
 @media (max-width: 600px) { .t-actions > .btn { width: 100%; } .t-test { max-width: none; } .t-msg { min-width: 0; } }
+
+/* Official ARM logo in the header */
+.brand-logo { display: block; width: 52px; height: 48px; object-fit: contain; flex: none; }
+@media (max-width: 600px) { .brand-logo { width: 44px; height: 40px; } }
