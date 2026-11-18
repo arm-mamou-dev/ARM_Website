@@ -485,7 +485,7 @@
     const showSoon = () => {
       body.innerHTML = `
         <div class="soon">
-          <span class="mark" aria-hidden="true"><i class="r">A</i><i class="y">R</i><i class="g">M</i></span>
+          <img class="soon-logo" src="/images/arm-logo.png" alt="" width="76" height="70">
           <h2>${msg().soonTitle}</h2>
           <p>${msg().soonPage}</p>
           <a href="${homeHref}" class="btn btn-outline">${msg().soonHome}</a>
