@@ -1,0 +1,7 @@
+dev/members.csv
+.DS_Store
+__pycache__/
+apps-script/.clasp.json
+deploy/.database
+dev/transactions.json
+dev/texts.json

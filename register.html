@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register – ARM Mamou</title>
+  <meta name="description" content="Register as an official member of the Association Des Ressortissants de Mamou.">
+  <meta name="theme-color" content="#2c4170">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 95'%3E%3Cpolygon points='50,0 61.8,36.2 100,36.2 69.1,58.6 80.9,95 50,72.6 19.1,95 30.9,58.6 0,36.2 38.2,36.2' fill='%232c4170'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="register">
+  <a class="skip-link" href="#main" data-i18n="nav.skip">Skip to content</a>
+
+  <header class="site-header" id="siteHeader">
+    <div class="container header-inner">
+      <a href="index.html" class="brand">
+        <span class="mark" aria-hidden="true"><i class="r">A</i><i class="y">R</i><i class="g">M</i></span>
+        <span class="brand-name">
+          <strong>ARM Mamou</strong>
+          <small>Association Des Ressortissants de Mamou</small>
+        </span>
+      </a>
+      <nav class="nav" id="nav" aria-label="Main">
+        <a href="index.html" data-nav="home" data-i18n="nav.home">Home</a>
+        <a href="about.html" data-nav="about" data-i18n="nav.about">About</a>
+        <a href="federation.html" data-nav="federation" data-i18n="nav.federation">Federation</a>
+        <a href="projects.html" data-nav="projects" data-i18n="nav.projects">Projects</a>
+        <a href="faq.html" data-nav="faq" data-i18n="nav.faq">FAQ</a>
+        <a href="member.html" data-nav="member" data-i18n="nav.login">Member login</a>
+        <a href="register.html" data-nav="register" class="btn btn-sm" data-i18n="nav.register">Register</a>
+      </nav>
+      <div class="header-tools">
+        <button type="button" class="lang" id="langToggle" aria-label="Switch language / Changer de langue">FR</button>
+        <button type="button" class="burger" id="menuToggle" aria-controls="nav" aria-expanded="false" aria-label="Menu"><span class="burger-icon" aria-hidden="true"><span></span><span></span><span></span></span><span class="burger-label" data-i18n="nav.menu">Menu</span></button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <section class="page-head">
+      <div class="container">
+        <h1 data-i18n="reg.title">Member registration</h1>
+      </div>
+    </section>
+    <section class="page-body">
+      <div class="container form-layout">
+        <div class="panel">
+          <form id="regForm" novalidate>
+            <p class="form-intro" data-i18n="form.allRequired">Please fill in every field.</p>
+            <div class="row">
+              <div class="field">
+                <label for="firstName" data-i18n="form.first">First name</label>
+                <input id="firstName" name="firstName" type="text" autocomplete="given-name" required maxlength="60">
+                <small class="error" data-for="firstName"></small>
+              </div>
+              <div class="field">
+                <label for="lastName" data-i18n="form.last">Last name</label>
+                <input id="lastName" name="lastName" type="text" autocomplete="family-name" required maxlength="60">
+                <small class="error" data-for="lastName"></small>
+              </div>
+            </div>
+            <div class="row">
+              <div class="field">
+                <label for="phone" data-i18n="form.phone">Phone number</label>
+                <input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" data-i18n-ph="form.phonePh" placeholder="e.g. 555-123-4567" required maxlength="20">
+                <small class="error" data-for="phone"></small>
+              </div>
+              <div class="field">
+                <label for="state" data-i18n="form.state">State of residence</label>
+                <select id="state" name="state" required>
+                  <option value="" data-i18n="form.statePick">Select your state</option>
+                </select>
+                <small class="error" data-for="state"></small>
+              </div>
+            </div>
+            <div class="row">
+              <div class="field">
+                <label for="subpref" data-i18n="form.subpref">Sub-prefecture of origin</label>
+                <select id="subpref" name="subpref" required>
+                  <option value="" data-i18n="form.subprefPick">Select your sub-prefecture</option>
+                </select>
+                <small class="error" data-for="subpref"></small>
+              </div>
+              <fieldset class="field">
+                <legend data-i18n="form.group">Group</legend>
+                <div class="radio-row">
+                  <label><input type="radio" name="group" value="Male" required><span data-i18n="group.male">Male</span></label>
+                  <label><input type="radio" name="group" value="Female"><span data-i18n="group.female">Female</span></label>
+                </div>
+                <small class="error" data-for="group"></small>
+              </fieldset>
+            </div>
+            <label class="check-row" for="texts">
+              <input type="checkbox" id="texts" name="texts" value="Yes">
+              <span data-i18n="form.texts">Yes, ARM may text me news and meeting reminders (optional). Message frequency varies. Msg &amp; data rates may apply. Reply STOP to opt out at any time.</span>
+            </label>
+            <div class="hp" aria-hidden="true">
+              <label for="website">Website</label>
+              <input id="website" name="website" type="text" tabindex="-1" autocomplete="off">
+            </div>
+            <button type="submit" class="btn btn-block" id="submitBtn" data-i18n="form.submit">Register</button>
+            <div id="formStatus" class="notice" role="status" aria-live="polite"></div>
+          </form>
+
+          <div id="regResult" class="result" hidden tabindex="-1">
+            <h2 id="regWelcome"></h2>
+            <p class="muted" data-i18n="reg.okText">Your registration was received. Keep your member ID: you'll need it to log in.</p>
+            <div class="mcard" >
+              <div class="mcard-top">
+                <span class="mark" aria-hidden="true"><i class="r">A</i><i class="y">R</i><i class="g">M</i></span>
+                <span data-i18n="card.label">Member card</span>
+              </div>
+              <div>
+                <span class="mcard-org">Association Des Ressortissants de Mamou</span>
+                <span class="mcard-name" id="regName"></span>
+              </div>
+              <div class="mcard-meta">
+                <div><small data-i18n="card.id">Member ID</small><strong id="regId"></strong></div>
+                <div><small data-i18n="card.group">Group</small><strong id="regGroup"></strong></div>
+                <div><small data-i18n="card.sp">Sub-prefecture</small><strong id="regSp"></strong></div>
+              </div>
+              <div class="mcard-stripe"></div>
+            </div>
+            <div class="result-actions">
+              <a href="member.html" class="btn" data-i18n="reg.checkStatus">Check my status</a>
+              <button type="button" class="btn btn-outline" id="registerAnother" data-i18n="reg.another">Register another person</button>
+            </div>
+          </div>
+        </div>
+
+        <aside class="aside">
+          <h3 data-i18n="reg.howTitle">How it works</h3>
+          <ol class="howto">
+            <li data-i18n="reg.how1">Fill in your details.</li>
+            <li data-i18n="reg.how2">You receive your member ID right away.</li>
+            <li data-i18n="reg.how3">ARM leadership reviews and activates your membership.</li>
+          </ol>
+          <p data-i18n="reg.note">Each phone number can only be registered once. Your information is only used by ARM leadership.</p>
+          <p class="aside-link"><span data-i18n="reg.already">Already registered?</span> <a href="member.html" data-i18n="reg.loginLink">Log in</a></p>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-org">
+        <span class="mark" aria-hidden="true"><i class="r">A</i><i class="y">R</i><i class="g">M</i></span>
+        <span>© <span id="year"></span> Association Des Ressortissants de Mamou</span>
+      </div>
+      <nav class="footer-links" aria-label="Footer">
+        <a href="about.html" data-i18n="nav.about">About</a>
+        <a href="federation.html" data-i18n="nav.federation">Federation</a>
+        <a href="projects.html" data-i18n="nav.projects">Projects</a>
+        <a href="faq.html" data-i18n="nav.faq">FAQ</a>
+        <a href="member.html" data-i18n="nav.login">Member login</a>
+        <a href="register.html" data-i18n="nav.register">Register</a>
+        <a href="admin.html" data-i18n="nav.admin">Admin</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

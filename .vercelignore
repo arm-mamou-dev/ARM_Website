@@ -1,0 +1,7 @@
+# Not part of the public website: test server, setup scripts, backend source, notes
+dev/
+deploy/
+apps-script/
+datasheet-script/
+README.md
+.DS_Store

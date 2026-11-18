@@ -1,0 +1,93 @@
+[
+  {
+    "id": "BLDG",
+    "title": "Purchase a Building",
+    "summary": "Purchase a permanent building for the association, funded by the Mamou community. Progress is reported monthly.",
+    "status": "In progress",
+    "start": "2026-10-01",
+    "end": "2027-09-30",
+    "goal": 600000,
+    "raised": 0,
+    "phases": [
+      {
+        "name": "Organize",
+        "start": "2026-10-01",
+        "end": "2026-11-30",
+        "status": ""
+      },
+      {
+        "name": "Legal setup",
+        "start": "2026-10-12",
+        "end": "2027-03-31",
+        "status": ""
+      },
+      {
+        "name": "Mobilize members",
+        "start": "2026-10-26",
+        "end": "2027-09-30",
+        "status": ""
+      },
+      {
+        "name": "Fundraising campaigns",
+        "start": "2026-10-01",
+        "end": "2027-08-14",
+        "status": ""
+      },
+      {
+        "name": "Building search & financing",
+        "start": "2026-12-01",
+        "end": "2027-04-30",
+        "status": ""
+      },
+      {
+        "name": "Offer & contract",
+        "start": "2027-05-03",
+        "end": "2027-07-31",
+        "status": ""
+      },
+      {
+        "name": "Close & move in",
+        "start": "2027-08-02",
+        "end": "2027-09-30",
+        "status": ""
+      }
+    ],
+    "parent": ""
+  },
+  {
+    "id": "EDU",
+    "title": "Education",
+    "summary": "ARM supports education for our community in two places: in the United States and in Mamou.",
+    "status": "Planned",
+    "start": "",
+    "end": "",
+    "goal": 0,
+    "raised": 0,
+    "phases": [],
+    "parent": ""
+  },
+  {
+    "id": "EDU-USA",
+    "title": "Education in the USA",
+    "summary": "",
+    "status": "Planned",
+    "start": "",
+    "end": "",
+    "goal": 0,
+    "raised": 0,
+    "phases": [],
+    "parent": "EDU"
+  },
+  {
+    "id": "EDU-MAMOU",
+    "title": "Education in Mamou",
+    "summary": "",
+    "status": "Planned",
+    "start": "",
+    "end": "",
+    "goal": 0,
+    "raised": 0,
+    "phases": [],
+    "parent": "EDU"
+  }
+]

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin – ARM Mamou</title>
+  <meta name="description" content="ARM admin area.">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#2c4170">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 95'%3E%3Cpolygon points='50,0 61.8,36.2 100,36.2 69.1,58.6 80.9,95 50,72.6 19.1,95 30.9,58.6 0,36.2 38.2,36.2' fill='%232c4170'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="admin">
+  <a class="skip-link" href="#main" data-i18n="nav.skip">Skip to content</a>
+
+  <header class="site-header" id="siteHeader">
+    <div class="container header-inner">
+      <a href="index.html" class="brand">
+        <span class="mark" aria-hidden="true"><i class="r">A</i><i class="y">R</i><i class="g">M</i></span>
+        <span class="brand-name">
+          <strong>ARM Mamou</strong>
+          <small>Association Des Ressortissants de Mamou</small>
+        </span>
+      </a>
+      <nav class="nav" id="nav" aria-label="Main">
+        <a href="index.html" data-nav="home" data-i18n="nav.home">Home</a>
+        <a href="about.html" data-nav="about" data-i18n="nav.about">About</a>
+        <a href="federation.html" data-nav="federation" data-i18n="nav.federation">Federation</a>
+        <a href="projects.html" data-nav="projects" data-i18n="nav.projects">Projects</a>
+        <a href="faq.html" data-nav="faq" data-i18n="nav.faq">FAQ</a>
+        <a href="member.html" data-nav="member" data-i18n="nav.login">Member login</a>
+        <a href="register.html" data-nav="register" class="btn btn-sm" data-i18n="nav.register">Register</a>
+      </nav>
+      <div class="header-tools">
+        <button type="button" class="lang" id="langToggle" aria-label="Switch language / Changer de langue">FR</button>
+        <button type="button" class="burger" id="menuToggle" aria-controls="nav" aria-expanded="false" aria-label="Menu"><span class="burger-icon" aria-hidden="true"><span></span><span></span><span></span></span><span class="burger-label" data-i18n="nav.menu">Menu</span></button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <section class="page-head">
+      <div class="container admin-head">
+        <div>
+          <h1 data-i18n="admin.title">Admin</h1>
+          <p class="intro" id="adminWho"></p>
+        </div>
+        <button type="button" class="btn btn-outline btn-sm" id="signOutBtn" data-i18n="admin.signOut" hidden>Sign out</button>
+      </div>
+    </section>
+    <section class="page-body">
+      <div class="container">
+
+        <div id="signInView" class="form-layout">
+          <div class="panel">
+            <h2 class="h-sm" data-i18n="admin.signInTitle">Admin sign-in</h2>
+            <p class="muted" data-i18n="admin.signInText">Sign in with your Google account (only emails on the ARM admin list have access), or with the admin username and password.</p>
+            <div id="gsiButton" class="gsi-slot"></div>
+            <button type="button" class="btn btn-outline" id="devSignIn" hidden>Sign in as test admin (local test only)</button>
+
+            <div class="or"><span data-i18n="admin.or">or sign in with the admin password</span></div>
+            <form id="pwForm" novalidate>
+              <div class="row">
+                <div class="field">
+                  <label for="adminUser" data-i18n="admin.username">Username</label>
+                  <input id="adminUser" name="username" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" required>
+                </div>
+                <div class="field">
+                  <label for="adminPass" data-i18n="admin.password">Password</label>
+                  <input id="adminPass" name="password" type="password" autocomplete="current-password" required>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-block" id="pwBtn" data-i18n="admin.signIn">Sign in</button>
+            </form>
+            <div id="signInStatus" class="notice" role="status" aria-live="polite"></div>
+          </div>
+          <aside class="aside">
+            <h3 data-i18n="admin.privacyTitle">Privacy</h3>
+            <ul>
+              <li data-i18n="admin.privacy1">Member and bank information is never shown on the public website.</li>
+              <li data-i18n="admin.privacy2">Each request is checked with Google and against the Admins list.</li>
+              <li data-i18n="admin.privacy3">You are signed out when you close this tab.</li>
+            </ul>
+          </aside>
+        </div>
+
+        <div id="adminView" hidden>
+          <div class="tabs" role="tablist">
+            <button type="button" role="tab" class="tab" data-tab="members" id="tabMembers" hidden data-i18n="admin.tabMembers">Members</button>
+            <button type="button" role="tab" class="tab" data-tab="finance" id="tabFinance" hidden data-i18n="admin.tabFinance">Finances</button>
+            <button type="button" role="tab" class="tab" data-tab="texts" id="tabTexts" hidden data-i18n="admin.tabTexts">Texts</button>
+          </div>
+
+          <!-- ===== Members ===== -->
+          <div id="membersPanel" role="tabpanel" hidden>
+            <div class="kpis">
+              <div class="kpi"><span data-i18n="admin.mTotal">Members</span><strong id="mTotal">–</strong><small data-i18n="admin.mTotalSub">registered</small></div>
+              <div class="kpi"><span data-i18n="admin.mActive">Active</span><strong id="mActive" class="pos">–</strong><small id="mActivePct"></small></div>
+              <div class="kpi"><span data-i18n="admin.mPending">Pending</span><strong id="mPending">–</strong><small data-i18n="admin.mPendingSub">waiting for review</small></div>
+              <div class="kpi"><span data-i18n="admin.mInactive">Inactive</span><strong id="mInactive">–</strong><small>&nbsp;</small></div>
+            </div>
+            <div class="toolbar">
+              <input id="mSearch" type="search" data-i18n-ph="admin.mSearch" placeholder="Search name, phone or ID" aria-label="Search members">
+              <select id="mSubpref" aria-label="Sub-prefecture"><option value="" data-i18n="admin.mAllSp">All sub-prefectures</option></select>
+              <select id="mStatus" aria-label="Status"><option value="" data-i18n="admin.mAllStatus">All statuses</option></select>
+              <select id="mGroup" aria-label="Group"><option value="" data-i18n="admin.mAllGroups">All groups</option></select>
+              <button type="button" class="btn btn-outline btn-sm" id="mExport" data-i18n="admin.mExport">Export to CSV</button>
+            </div>
+            <div id="membersStatus" class="notice" role="status" aria-live="polite"></div>
+            <div class="tx-wrap">
+              <table class="tx-table">
+                <thead>
+                  <tr>
+                    <th data-i18n="card.id">Member ID</th>
+                    <th data-i18n="dash.name">Name</th>
+                    <th data-i18n="dash.phone">Phone</th>
+                    <th data-i18n="card.group">Group</th>
+                    <th data-i18n="form.subpref">Sub-prefecture</th>
+                    <th data-i18n="form.state">State</th>
+                    <th data-i18n="admin.mRegistered">Registered</th>
+                    <th data-i18n="dash.status">Status</th>
+                    <th data-i18n="admin.colTexts">Texts</th>
+                  </tr>
+                </thead>
+                <tbody id="mBody"></tbody>
+              </table>
+              <p id="mEmpty" class="tx-empty muted" hidden data-i18n="admin.mEmpty">No members match this selection.</p>
+            </div>
+            <div class="tx-foot">
+              <span id="mCount" class="muted small"></span>
+              <button type="button" class="btn btn-outline btn-sm" id="mMore" data-i18n="admin.more" hidden>Show more</button>
+            </div>
+          </div>
+
+          <!-- ===== Texts ===== -->
+          <div id="textsPanel" role="tabpanel" hidden>
+            <div id="textsSetup" class="notice warn" hidden data-i18n="admin.tSetup">Texting is not set up yet. Open the <strong>ARM Members</strong> spreadsheet → menu <strong>ARM Admin → Set up texting (Twilio)…</strong> (see README, step 5).</div>
+            <form id="textForm" class="add-tx text-form" novalidate>
+              <h3 data-i18n="admin.tNew">New text message</h3>
+              <div class="toolbar">
+                <select id="tGroup" aria-label="Group"><option value="" data-i18n="admin.mAllGroups">All groups</option></select>
+                <select id="tSubpref" aria-label="Sub-prefecture"><option value="" data-i18n="admin.mAllSp">All sub-prefectures</option></select>
+                <select id="tState" aria-label="State"><option value="" data-i18n="admin.tAllStates">All states</option></select>
+              </div>
+              <p id="tAudience" class="t-audience"></p>
+              <div class="field">
+                <label for="tMessage" data-i18n="admin.tMessage">Message</label>
+                <textarea id="tMessage" rows="5" maxlength="640" data-i18n-ph="admin.tMessagePh" placeholder="e.g. Hello {first}, the ARM general assembly is this Sunday at 2 pm. See you there!"></textarea>
+                <p id="tCount" class="t-count muted small"></p>
+              </div>
+              <p class="muted small"><span data-i18n="admin.tHelp"><code>{first}</code> is replaced by each member's first name. Every text ends with:</span> <code id="tFooter"></code></p>
+              <div class="t-actions">
+                <div class="t-test">
+                  <input id="tTestPhone" type="tel" inputmode="tel" maxlength="20" data-i18n-ph="admin.tTestPh" placeholder="Your phone, for a test" aria-label="Test phone number">
+                  <button type="button" class="btn btn-outline btn-sm" id="tTestBtn" data-i18n="admin.tTest">Send test</button>
+                </div>
+                <button type="submit" class="btn btn-sm" id="tSendBtn">Send</button>
+              </div>
+            </form>
+            <div id="textsStatus" class="notice" role="status" aria-live="polite"></div>
+
+            <h3 class="t-history" data-i18n="admin.tHistory">Sent messages</h3>
+            <div class="tx-wrap">
+              <table class="tx-table">
+                <thead>
+                  <tr>
+                    <th data-i18n="admin.tColDate">Sent</th>
+                    <th data-i18n="admin.tMessage">Message</th>
+                    <th data-i18n="admin.tColAudience">To</th>
+                    <th class="r" data-i18n="admin.tColResult">Delivered to Twilio</th>
+                  </tr>
+                </thead>
+                <tbody id="tBody"></tbody>
+              </table>
+              <p id="tEmpty" class="tx-empty muted" hidden data-i18n="admin.tEmpty">No messages sent yet.</p>
+            </div>
+
+            <details class="howto-box">
+              <summary data-i18n="admin.tWhoTitle">Who receives texts?</summary>
+              <ol>
+                <li data-i18n="admin.tWho1">Only <strong>Active</strong> members whose <strong>Texts</strong> column is <strong>Yes</strong>. Members choose this when they register.</li>
+                <li data-i18n="admin.tWho2">For members who registered earlier: once a member agrees (in writing, e.g. a text or a sign-up sheet), set their Texts column to Yes in the ARM Members spreadsheet.</li>
+                <li data-i18n="admin.tWho3">A member who replies STOP is unsubscribed by Twilio; their Texts column is set to No at the next send.</li>
+                <li data-i18n="admin.tWho4">Send texts between 9 am and 8 pm. Delivery problems after a text is accepted appear in the Twilio Console → Monitor → Messaging logs.</li>
+              </ol>
+            </details>
+          </div>
+
+          <!-- ===== Finances ===== -->
+          <div id="financePanel" role="tabpanel" hidden>
+          <div class="kpis">
+            <div class="kpi"><span data-i18n="admin.balance">Bank balance</span><strong id="kBalance">–</strong><small id="kBalanceAsOf"></small></div>
+            <div class="kpi"><span data-i18n="admin.in">Money in</span><strong id="kIn" class="pos">–</strong><small id="kInCount"></small></div>
+            <div class="kpi"><span data-i18n="admin.out">Money out</span><strong id="kOut" class="neg">–</strong><small id="kOutCount"></small></div>
+            <div class="kpi"><span data-i18n="admin.net">Net</span><strong id="kNet">–</strong><small data-i18n="admin.forPeriod">for the selected period</small></div>
+          </div>
+
+          <div class="toolbar">
+            <select id="fPeriod" aria-label="Period">
+              <option value="month" data-i18n="admin.pMonth">This month</option>
+              <option value="lastMonth" data-i18n="admin.pLastMonth">Last month</option>
+              <option value="3months" data-i18n="admin.p3Months">Last 3 months</option>
+              <option value="year" data-i18n="admin.pYear">This year</option>
+              <option value="all" selected data-i18n="admin.pAll">All time</option>
+            </select>
+            <select id="fAccount" aria-label="Account"><option value="" data-i18n="admin.allAccounts">All accounts</option></select>
+            <select id="fCategory" aria-label="Category"><option value="" data-i18n="admin.allCategories">All categories</option></select>
+            <input id="fSearch" type="search" data-i18n-ph="admin.search" placeholder="Search descriptions" aria-label="Search">
+            <button type="button" class="btn btn-outline btn-sm add-tx-btn" id="addTxBtn" aria-expanded="false" aria-controls="addTxForm" data-i18n="admin.addTx">+ Add transaction</button>
+            <label class="btn btn-sm import-btn" for="csvFile"><span data-i18n="admin.import">Import Chase CSV</span></label>
+            <input type="file" id="csvFile" accept=".csv,text/csv" hidden>
+          </div>
+
+          <form id="addTxForm" class="add-tx" novalidate hidden>
+            <h3 data-i18n="admin.addTxTitle">Add a transaction manually</h3>
+            <div class="add-tx-grid">
+              <div class="field">
+                <label for="atDate" data-i18n="admin.colDate">Date</label>
+                <input id="atDate" type="date" required>
+              </div>
+              <fieldset class="field">
+                <legend data-i18n="admin.direction">Type</legend>
+                <div class="radio-row">
+                  <label><input type="radio" name="atDir" value="in" checked><span data-i18n="admin.in">Money in</span></label>
+                  <label><input type="radio" name="atDir" value="out"><span data-i18n="admin.out">Money out</span></label>
+                </div>
+              </fieldset>
+              <div class="field">
+                <label for="atAmount" data-i18n="admin.colAmount">Amount</label>
+                <span class="amt-input"><span>$</span><input id="atAmount" type="number" inputmode="decimal" min="0.01" step="0.01" placeholder="0.00" required></span>
+              </div>
+              <div class="field span-2">
+                <label for="atDesc" data-i18n="admin.colDesc">Description</label>
+                <input id="atDesc" type="text" maxlength="300" required data-i18n-ph="admin.descPh" placeholder="e.g. Cash dues collected at the general assembly">
+              </div>
+              <div class="field">
+                <label for="atAccount" data-i18n="admin.account">Account</label>
+                <input id="atAccount" type="text" maxlength="60" list="atAccounts" value="Cash">
+                <datalist id="atAccounts"></datalist>
+              </div>
+              <div class="field">
+                <label for="atCat" data-i18n="admin.colCat">Category</label>
+                <select id="atCat"></select>
+              </div>
+              <div class="field span-2">
+                <label for="atNotes" data-i18n="admin.colNotes">Notes</label>
+                <input id="atNotes" type="text" maxlength="300">
+              </div>
+            </div>
+            <p class="add-tx-note muted small" data-i18n="admin.manualNote">Manual entries count in Money in / Money out but do not change the bank balance. If the same money later appears in a Chase import, delete the manual entry to avoid counting it twice.</p>
+            <div class="add-tx-actions">
+              <button type="button" class="btn btn-outline btn-sm" id="atCancel" data-i18n="admin.cancelBtn">Cancel</button>
+              <button type="submit" class="btn btn-sm" id="atSave" data-i18n="admin.addTxSave">Add transaction</button>
+            </div>
+          </form>
+          <div id="adminStatus" class="notice" role="status" aria-live="polite"></div>
+
+          <div class="tx-wrap">
+            <table class="tx-table">
+              <thead>
+                <tr>
+                  <th data-i18n="admin.colDate">Date</th>
+                  <th data-i18n="admin.colDesc">Description</th>
+                  <th data-i18n="admin.colCat">Category</th>
+                  <th data-i18n="admin.colNotes">Notes</th>
+                  <th class="r" data-i18n="admin.colAmount">Amount</th>
+                  <th class="r" data-i18n="admin.colBalance">Balance</th>
+                </tr>
+              </thead>
+              <tbody id="txBody"></tbody>
+            </table>
+            <p id="txEmpty" class="tx-empty muted" hidden data-i18n="admin.empty">No transactions for this selection.</p>
+          </div>
+          <div class="tx-foot">
+            <span id="txCount" class="muted small"></span>
+            <button type="button" class="btn btn-outline btn-sm" id="txMore" data-i18n="admin.more" hidden>Show more</button>
+          </div>
+
+          <details class="howto-box">
+            <summary data-i18n="admin.howTitle">How to download transactions from Chase</summary>
+            <ol>
+              <li data-i18n="admin.how1">Sign in at chase.com and open the account.</li>
+              <li data-i18n="admin.how2">Click the download icon above the transaction list ("Download account activity").</li>
+              <li data-i18n="admin.how3">Choose file type CSV and the date range, then Download.</li>
+              <li data-i18n="admin.how4">Click "Import Chase CSV" here and pick the file. Transactions already imported are skipped automatically.</li>
+            </ol>
+          </details>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-org">
+        <span class="mark" aria-hidden="true"><i class="r">A</i><i class="y">R</i><i class="g">M</i></span>
+        <span>© <span id="year"></span> Association Des Ressortissants de Mamou</span>
+      </div>
+      <nav class="footer-links" aria-label="Footer">
+        <a href="about.html" data-i18n="nav.about">About</a>
+        <a href="federation.html" data-i18n="nav.federation">Federation</a>
+        <a href="projects.html" data-i18n="nav.projects">Projects</a>
+        <a href="faq.html" data-i18n="nav.faq">FAQ</a>
+        <a href="member.html" data-i18n="nav.login">Member login</a>
+        <a href="register.html" data-i18n="nav.register">Register</a>
+        <a href="admin.html" data-i18n="nav.admin">Admin</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

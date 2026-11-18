@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ARM – Association Des Ressortissants de Mamou</title>
+  <meta name="description" content="Official website of the Association Des Ressortissants de Mamou (ARM). Register as a member or check your membership status.">
+  <meta name="theme-color" content="#2c4170">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 95'%3E%3Cpolygon points='50,0 61.8,36.2 100,36.2 69.1,58.6 80.9,95 50,72.6 19.1,95 30.9,58.6 0,36.2 38.2,36.2' fill='%232c4170'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="home">
+  <a class="skip-link" href="#main" data-i18n="nav.skip">Skip to content</a>
+
+  <header class="site-header" id="siteHeader">
+    <div class="container header-inner">
+      <a href="index.html" class="brand">
+        <span class="mark" aria-hidden="true"><i class="r">A</i><i class="y">R</i><i class="g">M</i></span>
+        <span class="brand-name">
+          <strong>ARM Mamou</strong>
+          <small>Association Des Ressortissants de Mamou</small>
+        </span>
+      </a>
+      <nav class="nav" id="nav" aria-label="Main">
+        <a href="index.html" data-nav="home" data-i18n="nav.home">Home</a>
+        <a href="about.html" data-nav="about" data-i18n="nav.about">About</a>
+        <a href="federation.html" data-nav="federation" data-i18n="nav.federation">Federation</a>
+        <a href="projects.html" data-nav="projects" data-i18n="nav.projects">Projects</a>
+        <a href="faq.html" data-nav="faq" data-i18n="nav.faq">FAQ</a>
+        <a href="member.html" data-nav="member" data-i18n="nav.login">Member login</a>
+        <a href="register.html" data-nav="register" class="btn btn-sm" data-i18n="nav.register">Register</a>
+      </nav>
+      <div class="header-tools">
+        <button type="button" class="lang" id="langToggle" aria-label="Switch language / Changer de langue">FR</button>
+        <button type="button" class="burger" id="menuToggle" aria-controls="nav" aria-expanded="false" aria-label="Menu"><span class="burger-icon" aria-hidden="true"><span></span><span></span><span></span></span><span class="burger-label" data-i18n="nav.menu">Menu</span></button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <h1>Association Des Ressortissants de Mamou</h1>
+          <p class="hero-sub" data-i18n="home.sub">Official member registration</p>
+          <p class="hero-text" data-i18n="home.text">ARM brings together people from Mamou and their families living abroad. Register as an official member to strengthen our community ties, take part in development projects and access member benefits.</p>
+          <div class="hero-actions">
+            <a href="register.html" class="btn" data-i18n="home.register">Register as a member</a>
+            <a href="member.html" class="btn btn-outline" data-i18n="home.status">Check my status</a>
+          </div>
+          <p class="hero-count" id="heroCount" hidden></p>
+        </div>
+        <div class="hero-logo" aria-hidden="true">
+          <p class="word">MAMOU</p>
+          <span class="mark"><i class="r">A</i><i class="y">R</i><i class="g">M</i></span>
+          <svg viewBox="0 0 100 95"><polygon points="50,0 61.8,36.2 100,36.2 69.1,58.6 80.9,95 50,72.6 19.1,95 30.9,58.6 0,36.2 38.2,36.2"/><polygon points="50,30 54.5,43.8 69,43.8 57.3,52.3 61.8,66 50,57.5 38.2,66 42.7,52.3 31,43.8 45.5,43.8" fill="#fff"/></svg>
+        </div>
+      </div>
+    </section>
+
+    <section class="quick">
+      <div class="container quick-grid">
+        <a href="register.html" class="quick-link">
+          <strong data-i18n="quick.reg.t">New member</strong>
+          <span data-i18n="quick.reg.d">Register in under a minute and get your member ID.</span>
+        </a>
+        <a href="member.html" class="quick-link">
+          <strong data-i18n="quick.login.t">Already registered</strong>
+          <span data-i18n="quick.login.d">Log in with your member ID to check your status.</span>
+        </a>
+        <a href="about.html" class="quick-link">
+          <strong data-i18n="quick.about.t">About ARM</strong>
+          <span data-i18n="quick.about.d">Our mission, our groups and why membership matters.</span>
+        </a>
+        <a href="projects.html" class="quick-link">
+          <strong data-i18n="quick.proj.t">Our projects</strong>
+          <span data-i18n="quick.proj.d">Purchasing a building and education: follow our two projects.</span>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-org">
+        <span class="mark" aria-hidden="true"><i class="r">A</i><i class="y">R</i><i class="g">M</i></span>
+        <span>© <span id="year"></span> Association Des Ressortissants de Mamou</span>
+      </div>
+      <nav class="footer-links" aria-label="Footer">
+        <a href="about.html" data-i18n="nav.about">About</a>
+        <a href="federation.html" data-i18n="nav.federation">Federation</a>
+        <a href="projects.html" data-i18n="nav.projects">Projects</a>
+        <a href="faq.html" data-i18n="nav.faq">FAQ</a>
+        <a href="member.html" data-i18n="nav.login">Member login</a>
+        <a href="register.html" data-i18n="nav.register">Register</a>
+        <a href="admin.html" data-i18n="nav.admin">Admin</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script src="config.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
