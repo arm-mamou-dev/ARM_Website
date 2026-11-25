@@ -552,3 +552,7 @@ input::placeholder { color: #a3a9b5; font-style: italic; }
 .footer-logo { display: block; width: 32px; height: 30px; object-fit: contain; flex: none; background: #fff; border-radius: 5px; padding: 2px; }
 .mcard-logo { display: block; width: 34px; height: 31px; object-fit: contain; background: #fff; border-radius: 6px; padding: 2px; }
 .soon-logo { display: block; width: 76px; height: 70px; object-fit: contain; margin: 0 auto 16px; }
+
+.mcard-meta { row-gap: 12px; }
+.mcard-code { font-family: "Courier New", monospace; letter-spacing: 0.06em; color: #f4d27a !important; }
+.hint { display: block; margin-top: 4px; font-size: 0.8rem; color: var(--muted, #6b7280); }

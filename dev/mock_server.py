@@ -45,6 +45,21 @@ def normalize_id(v):
     return f"ARM-{int(m.group(1)):04d}" if m else ""
 
 
+DISTRICTS = {"Dounet": [{"name": "Dindeya", "code": "DY"}]}
+SP_CODES = {"Mamou-Centre": ("MC", "Mamou"), "Bouliwel": ("BW", "Mamou"), "Dounet": ("DN", "Timbo"), "Gongoret": ("GG", "Mamou"),
+            "Kégnéko": ("KG", "Timbo"), "Konkouré": ("KK", "Mamou"), "N'yagara": ("NG", "Timbo"), "Ouré-Kaba": ("OK", "Mamou"),
+            "Porédaka": ("PD", "Timbo"), "Saramoussaya": ("SM", "Timbo"), "Soyah": ("SY", "Mamou"), "Téguéréya": ("TG", "Timbo"),
+            "Timbo": ("TB", "Timbo"), "Tolo": ("TL", "Mamou")}
+STATE_ABBR = {"New Jersey": "NJ", "New York": "NY", "Pennsylvania": "PA", "Connecticut": "CT", "Maryland": "MD", "Georgia": "GA"}
+
+
+def card(state, sp, district):
+    s = STATE_ABBR.get(state, "INT" if state else "")
+    c, pref = SP_CODES.get(sp, ("", ""))
+    d = next((x["code"] for x in DISTRICTS.get(sp, []) if x["name"] == district), "")
+    return pref, "-".join(x for x in (s, c, d) if x)
+
+
 def register(data):
     if data.get("website"):
         return {"status": "ok", "memberId": "ARM-0000"}
@@ -67,7 +82,9 @@ def register(data):
                     data["firstName"].strip().title(), data["lastName"].strip().title(),
                     fmt_phone(d), data["group"], data["subpref"], data["state"], "Pending",
                     "Yes" if data.get("texts") == "Yes" else "No"])
-    return {"status": "ok", "memberId": member_id, "memberStatus": "Pending"}
+    pref, code = card(data["state"], data["subpref"], data.get("district", ""))
+    return {"status": "ok", "memberId": member_id, "memberStatus": "Pending",
+            "district": data.get("district", ""), "prefecture": pref, "cardCode": code}
 
 
 def lookup(data):
@@ -76,7 +93,8 @@ def lookup(data):
         if r[0].upper() == mid and digits(r[4])[-10:] == d and len(d) == 10:
             return {"status": "ok", "member": {
                 "memberId": r[0], "firstName": r[2], "lastName": r[3], "group": r[5], "subpref": r[6], "state": r[7],
-                "registeredAt": r[1], "memberStatus": (r[8] if len(r) > 8 else "") or "Pending", "phoneLast4": d[-4:]}}
+                "registeredAt": r[1], "memberStatus": (r[8] if len(r) > 8 else "") or "Pending", "phoneLast4": d[-4:],
+                "district": "", "prefecture": card(r[7], r[6], "")[0], "cardCode": card(r[7], r[6], "")[1]}}
     return {"status": "not_found"}
 
 
@@ -341,6 +359,8 @@ class Handler(SimpleHTTPRequestHandler):
                 and os.path.exists(os.path.join(ROOT, path.lstrip("/") + ".html")):
             self.path = path + ".html"
         if self.path.startswith("/mock-api"):
+            if "action=districts" in self.path:
+                return self.send_json({"status": "ok", "districts": DISTRICTS})
             if "action=projects" in self.path:
                 with open(os.path.join(ROOT, "dev", "projects.json")) as f:
                     return self.send_json({"status": "ok", "projects": json.load(f)})

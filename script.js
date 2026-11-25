@@ -118,6 +118,13 @@
     "form.subpref": "Sous-préfecture d'origine",
     "form.subprefPick": "Choisissez votre sous-préfecture",
     "card.sp": "Sous-préf.",
+    "card.prefecture": "Préfecture",
+    "card.district": "District",
+    "card.code": "Code",
+    "card.codeLong": "Code de membre",
+    "form.district": "District d'origine",
+    "form.districtPick": "Choisissez votre district (facultatif)",
+    "form.districtHelp": "Pas dans la liste ? Laissez vide, l'ARM ajoutera votre district.",
     "about.fedTitle": "Une fédération des sous-préfectures de Mamou",
     "about.fedText": "L'ARM fonctionne comme un système fédéral. Les associations des 14 communes et sous-préfectures de Mamou agissent localement, unies au sein de l'ARM.",
     "about.fedLink": "Voir la fédération",
@@ -545,7 +552,10 @@
     $(`#${prefix}Name`).textContent = `${m.firstName} ${m.lastName}`;
     $(`#${prefix}Id`).textContent = m.memberId;
     $(`#${prefix}Group`).textContent = groupText(m.group);
-    $(`#${prefix}Sp`).textContent = m.subpref || "";
+    $(`#${prefix}Sp`).textContent = m.subpref || "—";
+    $(`#${prefix}Pref`).textContent = m.prefecture || "—";
+    $(`#${prefix}Dist`).textContent = m.district || "—";
+    $(`#${prefix}Code`).textContent = m.cardCode || "—";
   }
 
   // ---------------------------------------------------------
@@ -581,6 +591,19 @@
     const match = SUBPREFS.find((n) => slugOf(n) === fromSp);
     if (match) spSelect.value = match;
 
+    // Districts of the chosen sub-prefecture (from the DataSheet's Districts tab)
+    let districts = {};
+    const distSelect = $("#district");
+    const fillDistricts = () => {
+      const list = districts[spSelect.value] || [];
+      while (distSelect.options.length > 1) distSelect.remove(1);
+      list.forEach((d) => distSelect.add(new Option(d.name, d.name)));
+      $("#districtField").hidden = !list.length;
+    };
+    spSelect.addEventListener("change", fillDistricts);
+    if (API) fetch(API + (API.includes("?") ? "&" : "?") + "action=districts").then((r) => r.json())
+      .then((d) => { districts = d.districts || {}; fillDistricts(); }).catch(() => {});
+
     const stateSelect = $("#state");
     STATES.forEach((s) => stateSelect.add(new Option(s, s)));
     stateSelect.add(new Option("Outside the U.S. / Hors des États-Unis", "Outside U.S."));
@@ -598,7 +621,7 @@
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const fd = new FormData(form);
-      const d = Object.fromEntries(["firstName", "lastName", "phone", "group", "subpref", "state", "website"].map((k) => [k, String(fd.get(k) || "").trim()]));
+      const d = Object.fromEntries(["firstName", "lastName", "phone", "group", "subpref", "district", "state", "website"].map((k) => [k, String(fd.get(k) || "").trim()]));
       d.texts = fd.get("texts") === "Yes" ? "Yes" : "No";
       const errs = {
         firstName: !d.firstName && msg().required,
@@ -622,7 +645,8 @@
       try {
         const out = await api({ action: "register", ...d });
         if (out.status === "ok") {
-          member = { ...d, firstName: titleCase(d.firstName), lastName: titleCase(d.lastName), memberId: out.memberId };
+          member = { ...d, firstName: titleCase(d.firstName), lastName: titleCase(d.lastName), memberId: out.memberId,
+            prefecture: out.prefecture || "", cardCode: out.cardCode || "" };
           showResult();
           form.hidden = true;
           result.hidden = false;
@@ -645,6 +669,7 @@
       form.reset();
       result.hidden = true;
       form.hidden = false;
+      fillDistricts();
       $("#firstName").focus();
     });
   }
@@ -680,6 +705,9 @@
       $("#dName").textContent = `${member.firstName} ${member.lastName}`;
       $("#dGroup").textContent = groupText(member.group);
       $("#dSp").textContent = member.subpref || "—";
+      $("#dDist").textContent = member.district || "—";
+      $("#dPref").textContent = member.prefecture || "—";
+      $("#dCode").textContent = member.cardCode || "—";
       $("#dState").textContent = stateText(member.state);
       $("#dPhone").textContent = "•••-•••-" + member.phoneLast4;
       const since = new Date(member.registeredAt);

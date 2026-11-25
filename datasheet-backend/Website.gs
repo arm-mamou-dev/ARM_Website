@@ -5,7 +5,8 @@
  * Members_Registration.gs (the Google Form copier). Both use the same script lock,
  * so a form answer and a website sign-up can never get the same Member ID.
  *
- * It ONLY appends rows to the Members tab, in columns A–I (+ T, Notes).
+ * It ONLY appends rows to the Members tab, in columns A–I (+ T Notes, W District).
+ * X Prefecture and Y Card code (e.g. NJ-DN-DY) are formulas in the sheet; this file only reads them.
  * It never rewrites headers, formulas (J–V) or drop-downs.
  *
  * Members columns used:
@@ -22,7 +23,9 @@
 
 const WEB = {
   SHEET: 'Members',
-  COL: { id: 1, date: 2, first: 3, last: 4, phone: 5, group: 6, state: 7, subpref: 8, status: 9, notes: 20 },
+  COL: { id: 1, date: 2, first: 3, last: 4, phone: 5, group: 6, state: 7, subpref: 8, status: 9, notes: 20,
+         district: 23, prefecture: 24, code: 25 },   // X Prefecture and Y Card code are formulas
+  WIDTH: 25,
   GROUPS: ['Male', 'Female'],
   SUBPREFS: ['Mamou-Centre', 'Bouliwel', 'Dounet', 'Gongoret', 'Kégnéko', 'Konkouré', "N'yagara",
              'Ouré-Kaba', 'Porédaka', 'Saramoussaya', 'Soyah', 'Téguéréya', 'Timbo', 'Tolo'],
@@ -45,6 +48,7 @@ function doPost(e) {
 
 function doGet(e) {
   if (e && e.parameter && e.parameter.action === 'projects') return webJson_({ status: 'ok', projects: [] });
+  if (e && e.parameter && e.parameter.action === 'districts') return webJson_({ status: 'ok', districts: webDistricts_() });
   const rows = webRows_();
   const bySubpref = {};
   rows.forEach(r => { const s = r[WEB.COL.subpref - 1]; if (s) bySubpref[s] = (bySubpref[s] || 0) + 1; });
@@ -58,6 +62,7 @@ function webRegister_(data) {
 
   const first = webClean_(data.firstName), last = webClean_(data.lastName);
   const group = webClean_(data.group), subpref = webClean_(data.subpref), state = webClean_(data.state);
+  const district = webClean_(data.district);
   const digits = webDigits_(data.phone);
   const texts = data.texts === 'Yes' ? 'Yes' : 'No';
 
@@ -65,6 +70,9 @@ function webRegister_(data) {
   if (WEB.GROUPS.indexOf(group) === -1) return { status: 'error', message: 'Invalid group.' };
   if (WEB.SUBPREFS.indexOf(subpref) === -1) return { status: 'error', message: 'Invalid sub-prefecture.' };
   if (digits.length < 10) return { status: 'error', message: 'Invalid phone number.' };
+  if (district && !(webDistricts_()[subpref] || []).some(d => d.name === district)) {
+    return { status: 'error', message: 'Invalid district.' };
+  }
 
   const lock = LockService.getScriptLock();   // same lock as Members_Registration.gs
   lock.waitLock(30000);
@@ -83,10 +91,14 @@ function webRegister_(data) {
     const r = webLastIdRow_(sheet) + 1;
     sheet.getRange(r, 1, 1, 9).setNumberFormat('@').setValues([[
       memberId, stamp, webSafe_(webTitle_(first)), webSafe_(webTitle_(last)), webPhone_(digits),
-      group, webSafe_(state), subpref, WEB.DEFAULT_STATUS,
+      group, webSafe_(webState_(state)), subpref, WEB.DEFAULT_STATUS,
     ]]);
     sheet.getRange(r, WEB.COL.notes).setValue('Registered on the website. Texts consent: ' + texts);
-    return { status: 'ok', memberId: memberId, memberStatus: WEB.DEFAULT_STATUS };
+    if (district) sheet.getRange(r, WEB.COL.district).setValue(district);
+    SpreadsheetApp.flush();
+    const made = sheet.getRange(r, WEB.COL.prefecture, 1, 2).getDisplayValues()[0];
+    return { status: 'ok', memberId: memberId, memberStatus: WEB.DEFAULT_STATUS,
+             district: district, prefecture: made[0], cardCode: made[1] };
   } finally {
     lock.releaseLock();
   }
@@ -116,6 +128,7 @@ function webLookup_(data) {
       group: c('group'), subpref: c('subpref'), state: c('state'),
       registeredAt: String(c('date')).trim().replace(' ', 'T'), memberStatus: c('status') || WEB.DEFAULT_STATUS,
       phoneLast4: key.slice(-4),
+      district: c('district'), prefecture: c('prefecture'), cardCode: c('code'),
     },
   };
 }
@@ -140,8 +153,35 @@ function webRows_(sheet) {
   sheet = sheet || webSheet_();
   const last = webLastIdRow_(sheet);
   if (last < 2) return [];
-  return sheet.getRange(2, 1, last - 1, 9).getDisplayValues().filter(r => String(r[0]).trim());
+  return sheet.getRange(2, 1, last - 1, WEB.WIDTH).getDisplayValues().filter(r => String(r[0]).trim());
 }
+
+/** Districts tab -> { 'Dounet': [{ name: 'Dindeya', code: 'DY' }], ... } */
+function webDistricts_() {
+  const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Districts');
+  const out = {};
+  if (!sh || sh.getLastRow() < 12) return out;
+  sh.getRange(12, 1, sh.getLastRow() - 11, 3).getDisplayValues().forEach(r => {
+    const sp = String(r[0]).trim(), name = String(r[1]).trim();
+    if (!sp || !name) return;
+    (out[sp] = out[sp] || []).push({ name: name, code: String(r[2]).trim() });
+  });
+  Object.keys(out).forEach(k => out[k].sort((a, b) => a.name.localeCompare(b.name)));
+  return out;
+}
+
+/** "New Jersey" -> "New Jersey (NJ)", the format the Google Form uses in the Members tab. */
+const WEB_STATES = {
+  'Alabama':'AL','Alaska':'AK','Arizona':'AZ','Arkansas':'AR','California':'CA','Colorado':'CO','Connecticut':'CT',
+  'Delaware':'DE','District of Columbia':'DC','Florida':'FL','Georgia':'GA','Hawaii':'HI','Idaho':'ID','Illinois':'IL',
+  'Indiana':'IN','Iowa':'IA','Kansas':'KS','Kentucky':'KY','Louisiana':'LA','Maine':'ME','Maryland':'MD',
+  'Massachusetts':'MA','Michigan':'MI','Minnesota':'MN','Mississippi':'MS','Missouri':'MO','Montana':'MT',
+  'Nebraska':'NE','Nevada':'NV','New Hampshire':'NH','New Jersey':'NJ','New Mexico':'NM','New York':'NY',
+  'North Carolina':'NC','North Dakota':'ND','Ohio':'OH','Oklahoma':'OK','Oregon':'OR','Pennsylvania':'PA',
+  'Rhode Island':'RI','South Carolina':'SC','South Dakota':'SD','Tennessee':'TN','Texas':'TX','Utah':'UT',
+  'Vermont':'VT','Virginia':'VA','Washington':'WA','West Virginia':'WV','Wisconsin':'WI','Wyoming':'WY',
+};
+function webState_(s) { return WEB_STATES[s] ? s + ' (' + WEB_STATES[s] + ')' : s; }
 
 function webDigits_(v) { return String(v || '').replace(/\D/g, ''); }
 

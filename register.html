@@ -88,6 +88,15 @@
                 </select>
                 <small class="error" data-for="subpref"></small>
               </div>
+              <div class="field" id="districtField" hidden>
+                <label for="district" data-i18n="form.district">District of origin</label>
+                <select id="district" name="district">
+                  <option value="" data-i18n="form.districtPick">Select your district (optional)</option>
+                </select>
+                <small class="hint" data-i18n="form.districtHelp">Not in the list? Leave it empty. ARM will add your district.</small>
+              </div>
+            </div>
+            <div class="row">
               <fieldset class="field">
                 <legend data-i18n="form.group">Group</legend>
                 <div class="radio-row">
@@ -125,6 +134,9 @@
                 <div><small data-i18n="card.id">Member ID</small><strong id="regId"></strong></div>
                 <div><small data-i18n="card.group">Group</small><strong id="regGroup"></strong></div>
                 <div><small data-i18n="card.sp">Sub-prefecture</small><strong id="regSp"></strong></div>
+                <div><small data-i18n="card.prefecture">Prefecture</small><strong id="regPref"></strong></div>
+                <div><small data-i18n="card.district">District</small><strong id="regDist"></strong></div>
+                <div><small data-i18n="card.code">Code</small><strong id="regCode" class="mcard-code"></strong></div>
               </div>
               <div class="mcard-stripe"></div>
             </div>
