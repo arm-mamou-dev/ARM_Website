@@ -84,7 +84,8 @@ def register(data):
                     "Yes" if data.get("texts") == "Yes" else "No"])
     pref, code = card(data["state"], data["subpref"], data.get("district", ""))
     return {"status": "ok", "memberId": member_id, "memberStatus": "Pending",
-            "district": data.get("district", ""), "prefecture": pref, "cardCode": code}
+            "district": data.get("district", ""), "prefecture": pref, "cardCode": code,
+            "knownAs": (data.get("knownAs") or "").strip().title()}
 
 
 def lookup(data):

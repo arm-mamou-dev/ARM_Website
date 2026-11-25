@@ -5,7 +5,7 @@
  * Members_Registration.gs (the Google Form copier). Both use the same script lock,
  * so a form answer and a website sign-up can never get the same Member ID.
  *
- * It ONLY appends rows to the Members tab, in columns A–I (+ T Notes, W District).
+ * It ONLY appends rows to the Members tab, in columns A–I (+ T Notes, W District, Z Known as).
  * X Prefecture and Y Card code (e.g. NJ-DN-DY) are formulas in the sheet; this file only reads them.
  * It never rewrites headers, formulas (J–V) or drop-downs.
  *
@@ -24,8 +24,8 @@
 const WEB = {
   SHEET: 'Members',
   COL: { id: 1, date: 2, first: 3, last: 4, phone: 5, group: 6, state: 7, subpref: 8, status: 9, notes: 20,
-         district: 23, prefecture: 24, code: 25 },   // X Prefecture and Y Card code are formulas
-  WIDTH: 25,
+         district: 23, prefecture: 24, code: 25, known: 26 },   // X Prefecture and Y Card code are formulas
+  WIDTH: 26,
   GROUPS: ['Male', 'Female'],
   SUBPREFS: ['Mamou-Centre', 'Bouliwel', 'Dounet', 'Gongoret', 'Kégnéko', 'Konkouré', "N'yagara",
              'Ouré-Kaba', 'Porédaka', 'Saramoussaya', 'Soyah', 'Téguéréya', 'Timbo', 'Tolo'],
@@ -63,6 +63,7 @@ function webRegister_(data) {
   const first = webClean_(data.firstName), last = webClean_(data.lastName);
   const group = webClean_(data.group), subpref = webClean_(data.subpref), state = webClean_(data.state);
   const district = webClean_(data.district);
+  const known = webClean_(data.knownAs).slice(0, 60);
   const digits = webDigits_(data.phone);
   const texts = data.texts === 'Yes' ? 'Yes' : 'No';
 
@@ -95,10 +96,11 @@ function webRegister_(data) {
     ]]);
     sheet.getRange(r, WEB.COL.notes).setValue('Registered on the website. Texts consent: ' + texts);
     if (district) sheet.getRange(r, WEB.COL.district).setValue(district);
+    if (known) sheet.getRange(r, WEB.COL.known).setNumberFormat('@').setValue(webSafe_(webTitle_(known)));
     SpreadsheetApp.flush();
     const made = sheet.getRange(r, WEB.COL.prefecture, 1, 2).getDisplayValues()[0];
     return { status: 'ok', memberId: memberId, memberStatus: WEB.DEFAULT_STATUS,
-             district: district, prefecture: made[0], cardCode: made[1] };
+             district: district, prefecture: made[0], cardCode: made[1], knownAs: known ? webTitle_(known) : '' };
   } finally {
     lock.releaseLock();
   }
@@ -128,7 +130,7 @@ function webLookup_(data) {
       group: c('group'), subpref: c('subpref'), state: c('state'),
       registeredAt: String(c('date')).trim().replace(' ', 'T'), memberStatus: c('status') || WEB.DEFAULT_STATUS,
       phoneLast4: key.slice(-4),
-      district: c('district'), prefecture: c('prefecture'), cardCode: c('code'),
+      district: c('district'), prefecture: c('prefecture'), cardCode: c('code'), knownAs: String(c('known') || '').trim(),
     },
   };
 }

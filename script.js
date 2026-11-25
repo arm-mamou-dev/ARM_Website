@@ -30,7 +30,7 @@
     "nav.federation": "Fédération",
     "nav.admin": "Admin",
     "nav.menu": "Menu",
-    "form.allRequired": "Veuillez remplir tous les champs.",
+    "form.allRequired": "Veuillez remplir chaque champ. Les champs « facultatif » peuvent rester vides.",
     "form.phonePh": "ex. 555-123-4567",
     "login.idPh": "ex. ARM-0001",
     "admin.title": "Administration",
@@ -119,6 +119,9 @@
     "form.subprefPick": "Choisissez votre sous-préfecture",
     "card.sp": "Sous-préf.",
     "card.prefecture": "Préfecture",
+    "form.known": "Surnom, dit (facultatif)",
+    "form.knownShort": "Surnom",
+    "form.knownHelp": "Le nom que la communauté vous donne, par exemple Thierno, Néné ou Bobo.",
     "card.district": "District",
     "card.code": "Code",
     "card.codeLong": "Code de membre",
@@ -550,6 +553,8 @@
 
   function fillCard(prefix, m) {
     $(`#${prefix}Name`).textContent = `${m.firstName} ${m.lastName}`;
+    const known = $(`#${prefix}Known`);
+    if (known) { known.textContent = m.knownAs ? (lang === "fr" ? "dit " : "Known as ") + m.knownAs : ""; known.hidden = !m.knownAs; }
     $(`#${prefix}Id`).textContent = m.memberId;
     $(`#${prefix}Group`).textContent = groupText(m.group);
     $(`#${prefix}Sp`).textContent = m.subpref || "—";
@@ -621,7 +626,7 @@
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const fd = new FormData(form);
-      const d = Object.fromEntries(["firstName", "lastName", "phone", "group", "subpref", "district", "state", "website"].map((k) => [k, String(fd.get(k) || "").trim()]));
+      const d = Object.fromEntries(["firstName", "lastName", "knownAs", "phone", "group", "subpref", "district", "state", "website"].map((k) => [k, String(fd.get(k) || "").trim()]));
       d.texts = fd.get("texts") === "Yes" ? "Yes" : "No";
       const errs = {
         firstName: !d.firstName && msg().required,
@@ -646,7 +651,7 @@
         const out = await api({ action: "register", ...d });
         if (out.status === "ok") {
           member = { ...d, firstName: titleCase(d.firstName), lastName: titleCase(d.lastName), memberId: out.memberId,
-            prefecture: out.prefecture || "", cardCode: out.cardCode || "" };
+            prefecture: out.prefecture || "", cardCode: out.cardCode || "", knownAs: out.knownAs || (d.knownAs ? titleCase(d.knownAs) : "") };
           showResult();
           form.hidden = true;
           result.hidden = false;
@@ -706,6 +711,7 @@
       $("#dGroup").textContent = groupText(member.group);
       $("#dSp").textContent = member.subpref || "—";
       $("#dDist").textContent = member.district || "—";
+      $("#dKnown").textContent = member.knownAs || "—";
       $("#dPref").textContent = member.prefecture || "—";
       $("#dCode").textContent = member.cardCode || "—";
       $("#dState").textContent = stateText(member.state);

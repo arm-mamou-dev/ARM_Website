@@ -53,7 +53,7 @@
       <div class="container form-layout">
         <div class="panel">
           <form id="regForm" novalidate>
-            <p class="form-intro" data-i18n="form.allRequired">Please fill in every field.</p>
+            <p class="form-intro" data-i18n="form.allRequired">Please fill in every field. Fields marked “optional” can be left empty.</p>
             <div class="row">
               <div class="field">
                 <label for="firstName" data-i18n="form.first">First name</label>
@@ -65,6 +65,11 @@
                 <input id="lastName" name="lastName" type="text" autocomplete="family-name" required maxlength="60">
                 <small class="error" data-for="lastName"></small>
               </div>
+            </div>
+            <div class="field">
+              <label for="knownAs" data-i18n="form.known">Known as (optional)</label>
+              <input id="knownAs" name="knownAs" type="text" autocomplete="nickname" maxlength="60">
+              <small class="hint" data-i18n="form.knownHelp">The name people in the community call you, for example Thierno, Néné or Bobo.</small>
             </div>
             <div class="row">
               <div class="field">
@@ -129,6 +134,7 @@
               <div>
                 <span class="mcard-org">Association Des Ressortissants de Mamou</span>
                 <span class="mcard-name" id="regName"></span>
+                <span class="mcard-known" id="regKnown"></span>
               </div>
               <div class="mcard-meta">
                 <div><small data-i18n="card.id">Member ID</small><strong id="regId"></strong></div>

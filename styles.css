@@ -556,3 +556,4 @@ input::placeholder { color: #a3a9b5; font-style: italic; }
 .mcard-meta { row-gap: 12px; }
 .mcard-code { font-family: "Courier New", monospace; letter-spacing: 0.06em; color: #f4d27a !important; }
 .hint { display: block; margin-top: 4px; font-size: 0.8rem; color: var(--muted, #6b7280); }
+.mcard-known { display: block; margin-top: 2px; font-size: 0.85rem; font-style: italic; color: #d6dcea; }
