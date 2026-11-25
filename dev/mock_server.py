@@ -48,7 +48,7 @@ def normalize_id(v):
     return f"ARM-{int(m.group(1)):04d}" if m else ""
 
 
-DISTRICTS = {"Dounet": [{"name": "Dindeya", "code": "DY"}]}
+DISTRICTS = {"Dounet": [{"name": "Dindeya", "code": "DIN"}]}
 SP_CODES = {"Mamou-Centre": ("MC", "Mamou"), "Bouliwel": ("BW", "Mamou"), "Dounet": ("DN", "Timbo"), "Gongoret": ("GG", "Mamou"),
             "Kégnéko": ("KG", "Timbo"), "Konkouré": ("KK", "Mamou"), "N'yagara": ("NG", "Timbo"), "Ouré-Kaba": ("OK", "Mamou"),
             "Porédaka": ("PD", "Timbo"), "Saramoussaya": ("SM", "Timbo"), "Soyah": ("SY", "Mamou"), "Téguéréya": ("TG", "Timbo"),
