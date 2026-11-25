@@ -479,7 +479,9 @@
   // Pages that need the database show a "being built" notice until it is connected
   // ---------------------------------------------------------
   const NEEDS_BACKEND = ["register", "member", "projects", "admin"];
-  if (!API && NEEDS_BACKEND.includes(PAGE)) {
+  const CFG = window.ARM_CONFIG || {};
+  const pageOff = (PAGE === "admin" && !CFG.ADMIN_READY) || (PAGE === "projects" && !CFG.PROJECTS_READY);
+  if ((!API || pageOff) && NEEDS_BACKEND.includes(PAGE)) {
     const body = document.querySelector(".page-body .container");
     const homeHref = location.pathname.includes("/mamou/") ? "../index.html" : "index.html";
     const showSoon = () => {
