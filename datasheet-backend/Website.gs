@@ -7,6 +7,7 @@
  *
  * It ONLY appends rows to the Members tab, in columns A–I (+ T Notes, W District, Z Known as).
  * X Prefecture and Y Card code (e.g. NJ-DN-DY) are formulas in the sheet; this file only reads them.
+ * Every website sign-up, accepted or duplicate, is also logged in the Website_Registration tab.
  * It never rewrites headers, formulas (J–V) or drop-downs.
  *
  * Members columns used:
@@ -82,7 +83,10 @@ function webRegister_(data) {
     const rows = webRows_(sheet);
     const key = digits.slice(-10);
     const existing = rows.find(r => webDigits_(r[WEB.COL.phone - 1]).indexOf(key) !== -1);
-    if (existing) return { status: 'duplicate', memberId: existing[WEB.COL.id - 1] };
+    if (existing) {
+      webLog_('Duplicate of ' + existing[WEB.COL.id - 1], '', first, last, known, digits, state, subpref, district, group, texts, '');
+      return { status: 'duplicate', memberId: existing[WEB.COL.id - 1] };
+    }
 
     let max = 0;
     rows.forEach(r => { const m = String(r[WEB.COL.id - 1]).match(/^ARM-(\d+)$/); if (m) max = Math.max(max, Number(m[1])); });
@@ -99,6 +103,7 @@ function webRegister_(data) {
     if (known) sheet.getRange(r, WEB.COL.known).setNumberFormat('@').setValue(webSafe_(webTitle_(known)));
     SpreadsheetApp.flush();
     const made = sheet.getRange(r, WEB.COL.prefecture, 1, 2).getDisplayValues()[0];
+    webLog_('Added to Members', memberId, first, last, known, digits, state, subpref, district, group, texts, made[1]);
     return { status: 'ok', memberId: memberId, memberStatus: WEB.DEFAULT_STATUS,
              district: district, prefecture: made[0], cardCode: made[1], knownAs: known ? webTitle_(known) : '' };
   } finally {
@@ -156,6 +161,17 @@ function webRows_(sheet) {
   const last = webLastIdRow_(sheet);
   if (last < 2) return [];
   return sheet.getRange(2, 1, last - 1, WEB.WIDTH).getDisplayValues().filter(r => String(r[0]).trim());
+}
+
+/** One row per website sign-up in the Website_Registration tab (never blocks a registration). */
+function webLog_(result, id, first, last, known, digits, state, subpref, district, group, texts, code) {
+  try {
+    const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Website_Registration');
+    if (!sh) return;
+    const stamp = Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd HH:mm');
+    sh.appendRow([stamp, result, id, webSafe_(webTitle_(first)), webSafe_(webTitle_(last)),
+      known ? webSafe_(webTitle_(known)) : '', webPhone_(digits), webSafe_(webState_(state)), subpref, district, group, texts, code]);
+  } catch (err) {}
 }
 
 /** Districts tab -> { 'Dounet': [{ name: 'Dindeya', code: 'DY' }], ... } */
