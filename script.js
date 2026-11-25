@@ -27,6 +27,13 @@
     "nav.about": "À propos",
     "nav.faq": "FAQ",
     "nav.projects": "Projets",
+    "nav.calendar": "Calendrier",
+    "cal.title": "Calendrier",
+    "cal.intro": "Assemblées générales, événements et collectes de fonds de l'association.",
+    "cal.loading": "Chargement du calendrier…",
+    "cal.showPast": "Voir les événements passés",
+    "cal.hidePast": "Masquer les événements passés",
+    "cal.note": "Les dates peuvent changer. Suivez les groupes WhatsApp de l'ARM pour les confirmations.",
     "nav.federation": "Fédération",
     "nav.admin": "Admin",
     "nav.menu": "Menu",
@@ -488,7 +495,7 @@
   // ---------------------------------------------------------
   // Pages that need the database show a "being built" notice until it is connected
   // ---------------------------------------------------------
-  const NEEDS_BACKEND = ["register", "member", "projects", "admin"];
+  const NEEDS_BACKEND = ["register", "member", "projects", "admin", "calendar"];
   const CFG = window.ARM_CONFIG || {};
   const pageOff = (PAGE === "admin" && !CFG.ADMIN_READY) || (PAGE === "projects" && !CFG.PROJECTS_READY);
   if ((!API || pageOff) && NEEDS_BACKEND.includes(PAGE)) {
@@ -576,6 +583,74 @@
     };
     rerender.push(show);
     fetch(API).then((r) => r.json()).then((d) => { count = Number(d.count) || 0; show(); }).catch(() => {});
+  }
+
+  // ---------------------------------------------------------
+  // Calendar (Meetings tab rows marked "Show on website")
+  // ---------------------------------------------------------
+  if (PAGE === "calendar") {
+    const list = $("#calList");
+    const pastBtn = $("#calPastBtn");
+    let events = null, showPast = false;
+    const T = {
+      en: { "General Assembly": "General assembly", Event: "Event", Fundraiser: "Fundraiser", Meeting: "Meeting",
+            Condolence: "Condolence", Deadline: "Deadline", Other: "Other",
+            Done: "Done", Cancelled: "Cancelled", none: "No upcoming events yet. Check back soon.", err: "The calendar could not be loaded. Please try again later.",
+            today: "Today", past: "Past events", showPast: "Show past events", hidePast: "Hide past events" },
+      fr: { "General Assembly": "Assemblée générale", Event: "Événement", Fundraiser: "Collecte de fonds", Meeting: "Réunion",
+            Condolence: "Condoléances", Deadline: "Échéance", Other: "Autre",
+            Done: "Terminé", Cancelled: "Annulé", none: "Aucun événement à venir pour le moment. Revenez bientôt.", err: "Le calendrier n'a pas pu être chargé. Réessayez plus tard.",
+            today: "Aujourd'hui", past: "Événements passés", showPast: "Voir les événements passés", hidePast: "Masquer les événements passés" },
+    };
+    const t = () => T[lang === "fr" ? "fr" : "en"];
+    const loc = () => (lang === "fr" ? "fr-FR" : "en-US");
+    const day = (iso) => { const [y, m, d] = iso.split("-").map(Number); return new Date(y, m - 1, d); };
+    const todayIso = () => { const n = new Date(); return [n.getFullYear(), String(n.getMonth() + 1).padStart(2, "0"), String(n.getDate()).padStart(2, "0")].join("-"); };
+    const typeClass = (ty) => "cal-type t-" + String(ty).toLowerCase().replace(/[^a-z]+/g, "-");
+
+    const item = (e) => {
+      const d = day(e.date);
+      const status = e.status === "Cancelled" || e.status === "Done" ? `<span class="badge ${e.status === "Done" ? "active" : "inactive"}">${esc(t()[e.status])}</span>` : "";
+      const isToday = e.date === todayIso() ? `<span class="badge pending">${esc(t().today)}</span>` : "";
+      return `<li class="cal-item${e.status === "Cancelled" ? " cancelled" : ""}">
+        <div class="cal-date" aria-hidden="true">
+          <span class="cal-dow">${esc(d.toLocaleDateString(loc(), { weekday: "short" }))}</span>
+          <span class="cal-day">${d.getDate()}</span>
+          <span class="cal-mon">${esc(d.toLocaleDateString(loc(), { month: "short" }))}</span>
+        </div>
+        <div class="cal-body">
+          <p class="cal-meta"><span class="${typeClass(e.type)}">${esc(t()[e.type] || e.type)}</span> ${isToday} ${status}</p>
+          <h3>${esc(e.title)}</h3>
+          <p class="cal-when">${esc(d.toLocaleDateString(loc(), { weekday: "long", year: "numeric", month: "long", day: "numeric" }))}${e.location ? " · " + esc(e.location) : ""}</p>
+        </div>
+      </li>`;
+    };
+    const months = (evs) => {
+      const groups = [];
+      evs.forEach((e) => {
+        const key = e.date.slice(0, 7);
+        let g = groups.find((x) => x.key === key);
+        if (!g) groups.push((g = { key, items: [] }));
+        g.items.push(e);
+      });
+      return groups.map((g) => `<h2 class="cal-month">${esc(day(g.key + "-01").toLocaleDateString(loc(), { month: "long", year: "numeric" }))}</h2><ul class="cal-items">${g.items.map(item).join("")}</ul>`).join("");
+    };
+    const render = () => {
+      if (events === null) return;
+      if (events === false) { list.innerHTML = `<p class="muted">${esc(t().err)}</p>`; return; }
+      const now = todayIso();
+      const upcoming = events.filter((e) => e.date >= now);
+      const past = events.filter((e) => e.date < now).reverse();
+      list.innerHTML = (upcoming.length ? months(upcoming) : `<p class="muted">${esc(t().none)}</p>`) +
+        (showPast && past.length ? `<h2 class="cal-month cal-past-title">${esc(t().past)}</h2>${months(past)}` : "");
+      pastBtn.hidden = !past.length;
+      pastBtn.textContent = showPast ? t().hidePast : t().showPast;
+    };
+    rerender.push(render);
+    pastBtn.addEventListener("click", () => { showPast = !showPast; render(); });
+    fetch(API + (API.includes("?") ? "&" : "?") + "action=calendar").then((r) => r.json())
+      .then((d) => { events = d.status === "ok" ? d.events || [] : false; render(); })
+      .catch(() => { events = false; render(); });
   }
 
   // ---------------------------------------------------------

@@ -557,3 +557,20 @@ input::placeholder { color: #a3a9b5; font-style: italic; }
 .mcard-code { font-family: "Courier New", monospace; letter-spacing: 0.06em; color: #f4d27a !important; }
 .hint { display: block; margin-top: 4px; font-size: 0.8rem; color: var(--muted, #6b7280); }
 .mcard-known { display: block; margin-top: 2px; font-size: 0.85rem; font-style: italic; color: #d6dcea; }
+
+/* Calendar */
+.cal-month { font-size: 1.15rem; margin: 28px 0 12px; color: var(--navy, #2c4170); text-transform: capitalize; }
+.cal-month:first-child { margin-top: 0; }
+.cal-items { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.cal-item { display: flex; gap: 16px; align-items: flex-start; background: #fff; border: 1px solid #e3e1da; border-radius: 12px; padding: 14px 16px; }
+.cal-item.cancelled h3 { text-decoration: line-through; opacity: 0.7; }
+.cal-date { flex: none; width: 62px; text-align: center; border-radius: 10px; background: #2c4170; color: #fff; padding: 6px 0 8px; line-height: 1.1; }
+.cal-dow, .cal-mon { display: block; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: #c9d1e3; }
+.cal-day { display: block; font: 700 1.5rem/1.15 Montserrat, sans-serif; }
+.cal-body h3 { margin: 4px 0 4px; font-size: 1.02rem; line-height: 1.35; }
+.cal-meta { margin: 0; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.cal-when { margin: 0; font-size: 0.88rem; color: #5b6472; }
+.cal-type { font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; padding: 2px 8px; border-radius: 999px; background: #eef1f7; color: #2c4170; }
+.cal-type.t-general-assembly { background: #e6f2ea; color: #1f6b3a; }
+.cal-type.t-fundraiser { background: #fbf0d9; color: #7a5300; }
+.cal-more { margin: 20px 0 8px; }

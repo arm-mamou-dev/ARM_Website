@@ -20,6 +20,8 @@
  * POST { action: "lookup", memberId, phone }  -> Member ID AND phone must match (phone never returned)
  * GET                    -> { status: "ok", count, bySubpref }
  * GET ?action=projects   -> { status: "ok", projects: [] }  (project data comes in a later phase)
+ * GET ?action=calendar   -> { status: "ok", events }  (Meetings tab rows with Show on website = Yes;
+ *                           only date, type, title, location and status: never notes or names)
  */
 
 const WEB = {
@@ -49,6 +51,7 @@ function doPost(e) {
 
 function doGet(e) {
   if (e && e.parameter && e.parameter.action === 'projects') return webJson_({ status: 'ok', projects: [] });
+  if (e && e.parameter && e.parameter.action === 'calendar') return webJson_({ status: 'ok', events: webCalendar_() });
   if (e && e.parameter && e.parameter.action === 'districts') return webJson_({ status: 'ok', districts: webDistricts_() });
   const rows = webRows_();
   const bySubpref = {};
@@ -161,6 +164,20 @@ function webRows_(sheet) {
   const last = webLastIdRow_(sheet);
   if (last < 2) return [];
   return sheet.getRange(2, 1, last - 1, WEB.WIDTH).getDisplayValues().filter(r => String(r[0]).trim());
+}
+
+/** Meetings tab -> public events. Blank "Show on website" = shown only for assemblies, events and fundraisers. */
+function webCalendar_() {
+  const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Meetings');
+  if (!sh || sh.getLastRow() < 12) return [];
+  const pub = ['General Assembly', 'Event', 'Fundraiser'];
+  const tz = Session.getScriptTimeZone();
+  return sh.getRange(12, 1, sh.getLastRow() - 11, 10).getValues()
+    .filter(r => r[0] instanceof Date && r[2])
+    .filter(r => { const show = String(r[9]).trim(); return show === 'Yes' || (!show && pub.indexOf(String(r[1])) !== -1); })
+    .map(r => ({ date: Utilities.formatDate(r[0], tz, 'yyyy-MM-dd'), type: String(r[1]), title: String(r[2]),
+                 location: String(r[3] || ''), status: String(r[5] || 'Planned') }))
+    .sort((a, b) => a.date.localeCompare(b.date));
 }
 
 /** One row per website sign-up in the Website_Registration tab (never blocks a registration). */

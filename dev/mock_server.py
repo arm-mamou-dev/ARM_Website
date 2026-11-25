@@ -360,6 +360,12 @@ class Handler(SimpleHTTPRequestHandler):
                 and os.path.exists(os.path.join(ROOT, path.lstrip("/") + ".html")):
             self.path = path + ".html"
         if self.path.startswith("/mock-api"):
+            if "action=calendar" in self.path:
+                return self.send_json({"status": "ok", "events": [
+                    {"date": "2026-11-16", "type": "Fundraiser", "title": "Launch Education in Mamou and Land appeals", "location": "WhatsApp and website", "status": "Planned"},
+                    {"date": "2026-12-19", "type": "General Assembly", "title": "Kickoff general assembly: building, education and land projects", "location": "", "status": "Planned"},
+                    {"date": "2027-02-27", "type": "General Assembly", "title": "Quarterly general assembly #1", "location": "", "status": "Planned"},
+                    {"date": "2027-03-10", "type": "Fundraiser", "title": "Eid al-Fitr collection (date approximate)", "location": "", "status": "Planned"}]})
             if "action=districts" in self.path:
                 return self.send_json({"status": "ok", "districts": DISTRICTS})
             if "action=projects" in self.path:
