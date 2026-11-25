@@ -789,6 +789,11 @@
         if (out.status === "ok") {
           member = { ...d, firstName: titleCase(d.firstName), lastName: titleCase(d.lastName), memberId: out.memberId,
             prefecture: out.prefecture || "", cardCode: out.cardCode || "", knownAs: out.knownAs || (d.knownAs ? titleCase(d.knownAs) : "") };
+          // Read the new row back from the Google Sheet so the card shows exactly what was saved
+          try {
+            const saved = await api({ action: "lookup", memberId: out.memberId, phone: d.phone });
+            if (saved.status === "ok") member = saved.member;
+          } catch (_) {}
           showResult();
           form.hidden = true;
           result.hidden = false;
@@ -825,8 +830,29 @@
     const btn = $("#loginBtn");
     const setError = makeErrors(form);
     const KEY = "arm-member";
-    let member = null;
-    try { member = JSON.parse(sessionStorage.getItem(KEY) || "null"); } catch (_) {}
+    const LOGIN_KEY = "arm-member-login";   // kept only for this browser tab, cleared on log out
+    let member = null, login = null;
+    try { member = JSON.parse(sessionStorage.getItem(KEY) || "null"); login = JSON.parse(sessionStorage.getItem(LOGIN_KEY) || "null"); } catch (_) {}
+
+    // The card always comes from the Google Sheet: refresh it on load and when the page comes back into view
+    let lastRefresh = 0;
+    async function refresh() {
+      if (!member || !login || !API || Date.now() - lastRefresh < 30000) return;
+      lastRefresh = Date.now();
+      try {
+        const out = await api({ action: "lookup", memberId: login.id, phone: login.phone });
+        if (out.status === "ok") {
+          member = out.member;
+          try { sessionStorage.setItem(KEY, JSON.stringify(member)); } catch (_) {}
+          showDash();
+        } else if (out.status === "not_found") {
+          member = null; login = null;
+          try { sessionStorage.removeItem(KEY); sessionStorage.removeItem(LOGIN_KEY); } catch (_) {}
+          showDash();
+        }
+      } catch (_) {}
+    }
+    document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") refresh(); });
 
     formatPhoneInput($("#loginPhone"));
     // Arriving from registration: member ID already filled in
@@ -858,6 +884,7 @@
       fillCard("dash", member);
     }
     rerender.push(showDash);
+    refresh();
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -882,7 +909,9 @@
         const out = await api({ action: "lookup", memberId: id, phone });
         if (out.status === "ok") {
           member = out.member;
-          try { sessionStorage.setItem(KEY, JSON.stringify(member)); } catch (_) {}
+          login = { id, phone };
+          lastRefresh = Date.now();
+          try { sessionStorage.setItem(KEY, JSON.stringify(member)); sessionStorage.setItem(LOGIN_KEY, JSON.stringify(login)); } catch (_) {}
           form.reset();
           showDash();
         } else if (out.status === "too_many") {
@@ -901,8 +930,8 @@
     });
 
     $("#logoutBtn").addEventListener("click", () => {
-      member = null;
-      try { sessionStorage.removeItem(KEY); } catch (_) {}
+      member = null; login = null;
+      try { sessionStorage.removeItem(KEY); sessionStorage.removeItem(LOGIN_KEY); } catch (_) {}
       showDash();
       $("#memberId").focus();
     });

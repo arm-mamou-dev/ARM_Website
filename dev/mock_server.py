@@ -53,6 +53,9 @@ SP_CODES = {"Mamou-Centre": ("MC", "Mamou"), "Bouliwel": ("BW", "Mamou"), "Doune
 STATE_ABBR = {"New Jersey": "NJ", "New York": "NY", "Pennsylvania": "PA", "Connecticut": "CT", "Maryland": "MD", "Georgia": "GA"}
 
 
+EXTRA = {}   # test only: district and "known as" per member, kept in memory
+
+
 def card(state, sp, district):
     s = STATE_ABBR.get(state, "INT" if state else "")
     c, pref = SP_CODES.get(sp, ("", ""))
@@ -83,6 +86,7 @@ def register(data):
                     fmt_phone(d), data["group"], data["subpref"], data["state"], "Pending",
                     "Yes" if data.get("texts") == "Yes" else "No"])
     pref, code = card(data["state"], data["subpref"], data.get("district", ""))
+    EXTRA[member_id] = {"district": data.get("district", ""), "knownAs": (data.get("knownAs") or "").strip().title()}
     return {"status": "ok", "memberId": member_id, "memberStatus": "Pending",
             "district": data.get("district", ""), "prefecture": pref, "cardCode": code,
             "knownAs": (data.get("knownAs") or "").strip().title()}
@@ -95,7 +99,10 @@ def lookup(data):
             return {"status": "ok", "member": {
                 "memberId": r[0], "firstName": r[2], "lastName": r[3], "group": r[5], "subpref": r[6], "state": r[7],
                 "registeredAt": r[1], "memberStatus": (r[8] if len(r) > 8 else "") or "Pending", "phoneLast4": d[-4:],
-                "district": "", "prefecture": card(r[7], r[6], "")[0], "cardCode": card(r[7], r[6], "")[1]}}
+                "district": EXTRA.get(r[0], {}).get("district", ""),
+                "prefecture": card(r[7], r[6], EXTRA.get(r[0], {}).get("district", ""))[0],
+                "cardCode": card(r[7], r[6], EXTRA.get(r[0], {}).get("district", ""))[1],
+                "knownAs": EXTRA.get(r[0], {}).get("knownAs", "")}}
     return {"status": "not_found"}
 
 
