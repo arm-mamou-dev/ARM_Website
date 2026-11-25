@@ -53,6 +53,13 @@
     </section>
     <section class="page-body">
       <div class="container">
+        <div class="cal-toolbar">
+          <div class="cal-seg" role="group" aria-label="View">
+            <button type="button" data-view="list" aria-pressed="true" data-i18n="cal.list">List</button>
+            <button type="button" data-view="grid" aria-pressed="false" data-i18n="cal.grid">Month</button>
+          </div>
+        </div>
+        <div id="calGrid" class="cal-grid-wrap" hidden></div>
         <div id="calList" class="cal-list" aria-live="polite"><p class="muted" data-i18n="cal.loading">Loading the calendar…</p></div>
         <p class="cal-more"><button type="button" class="btn btn-outline" id="calPastBtn" hidden data-i18n="cal.showPast">Show past events</button></p>
         <p class="muted small" data-i18n="cal.note">Dates can change. Watch the ARM WhatsApp groups for confirmations.</p>

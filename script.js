@@ -32,6 +32,8 @@
     "cal.intro": "Assemblées générales, événements et collectes de fonds de l'association.",
     "cal.loading": "Chargement du calendrier…",
     "cal.showPast": "Voir les événements passés",
+    "cal.list": "Liste",
+    "cal.grid": "Mois",
     "cal.hidePast": "Masquer les événements passés",
     "cal.note": "Les dates peuvent changer. Suivez les groupes WhatsApp de l'ARM pour les confirmations.",
     "nav.federation": "Fédération",
@@ -591,16 +593,22 @@
   if (PAGE === "calendar") {
     const list = $("#calList");
     const pastBtn = $("#calPastBtn");
+    const gridEl = $("#calGrid");
     let events = null, showPast = false;
+    let view = "list";
+    try { view = localStorage.getItem("arm-cal-view") === "grid" ? "grid" : "list"; } catch (_) {}
+    let gridMonth = null, pickedDay = null;   // gridMonth: "yyyy-mm"
     const T = {
       en: { "General Assembly": "General assembly", Event: "Event", Fundraiser: "Fundraiser", Meeting: "Meeting",
             Condolence: "Condolence", Deadline: "Deadline", Other: "Other",
             Done: "Done", Cancelled: "Cancelled", none: "No upcoming events yet. Check back soon.", err: "The calendar could not be loaded. Please try again later.",
-            today: "Today", past: "Past events", showPast: "Show past events", hidePast: "Hide past events" },
+            today: "Today", past: "Past events", showPast: "Show past events", hidePast: "Hide past events",
+            prev: "Previous month", next: "Next month", thisMonth: "Today", noDay: "No events on this day.", pick: "Tap a highlighted day to see its events." },
       fr: { "General Assembly": "Assemblée générale", Event: "Événement", Fundraiser: "Collecte de fonds", Meeting: "Réunion",
             Condolence: "Condoléances", Deadline: "Échéance", Other: "Autre",
             Done: "Terminé", Cancelled: "Annulé", none: "Aucun événement à venir pour le moment. Revenez bientôt.", err: "Le calendrier n'a pas pu être chargé. Réessayez plus tard.",
-            today: "Aujourd'hui", past: "Événements passés", showPast: "Voir les événements passés", hidePast: "Masquer les événements passés" },
+            today: "Aujourd'hui", past: "Événements passés", showPast: "Voir les événements passés", hidePast: "Masquer les événements passés",
+            prev: "Mois précédent", next: "Mois suivant", thisMonth: "Aujourd'hui", noDay: "Aucun événement ce jour-là.", pick: "Touchez un jour en couleur pour voir ses événements." },
     };
     const t = () => T[lang === "fr" ? "fr" : "en"];
     const loc = () => (lang === "fr" ? "fr-FR" : "en-US");
@@ -635,9 +643,63 @@
       });
       return groups.map((g) => `<h2 class="cal-month">${esc(day(g.key + "-01").toLocaleDateString(loc(), { month: "long", year: "numeric" }))}</h2><ul class="cal-items">${g.items.map(item).join("")}</ul>`).join("");
     };
+    const grid = () => {
+      const now = todayIso();
+      if (!gridMonth) {
+        const next = events.find((e) => e.date >= now);
+        gridMonth = (next ? next.date : now).slice(0, 7);
+      }
+      const [y, m] = gridMonth.split("-").map(Number);
+      const first = new Date(y, m - 1, 1);
+      const lead = (first.getDay() + 6) % 7;            // weeks start on Monday
+      const days = new Date(y, m, 0).getDate();
+      const iso = (d) => `${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+      const heads = [...Array(7)].map((_, i) => new Date(2024, 0, 1 + i).toLocaleDateString(loc(), { weekday: "short" }));
+      let cells = "";
+      for (let i = 0; i < lead; i++) cells += `<div class="cal-cell empty"></div>`;
+      for (let d = 1; d <= days; d++) {
+        const key = iso(d), evs = events.filter((e) => e.date === key);
+        const cls = ["cal-cell", key === now ? "today" : "", evs.length ? "has" : "", key === pickedDay ? "picked" : ""].join(" ");
+        const chips = evs.map((e) => `<span class="${typeClass(e.type)} cal-chip">${esc(e.title)}</span>`).join("");
+        cells += evs.length
+          ? `<button type="button" class="${cls}" data-day="${key}" aria-label="${esc(day(key).toLocaleDateString(loc(), { day: "numeric", month: "long" }))}: ${evs.length}"><span class="cal-num">${d}</span><span class="cal-dots">${evs.map((e) => `<i class="${typeClass(e.type)}"></i>`).join("")}</span>${chips}</button>`
+          : `<div class="${cls}"><span class="cal-num">${d}</span></div>`;
+      }
+      const picked = pickedDay && pickedDay.startsWith(gridMonth) ? events.filter((e) => e.date === pickedDay) : null;
+      gridEl.innerHTML = `
+        <div class="cal-nav">
+          <button type="button" class="btn btn-outline btn-sm" data-move="-1" aria-label="${esc(t().prev)}">‹</button>
+          <h2 class="cal-month">${esc(first.toLocaleDateString(loc(), { month: "long", year: "numeric" }))}</h2>
+          <button type="button" class="btn btn-outline btn-sm" data-move="1" aria-label="${esc(t().next)}">›</button>
+          <button type="button" class="btn btn-outline btn-sm" data-move="0">${esc(t().thisMonth)}</button>
+        </div>
+        <div class="cal-grid">${heads.map((h) => `<div class="cal-head">${esc(h)}</div>`).join("")}${cells}</div>
+        ${picked ? (picked.length ? `<ul class="cal-items cal-picked">${picked.map(item).join("")}</ul>` : "") : `<p class="muted small cal-hint">${esc(t().pick)}</p>`}`;
+    };
+    gridEl.addEventListener("click", (e) => {
+      const mv = e.target.closest("[data-move]");
+      if (mv) {
+        const n = Number(mv.dataset.move);
+        if (n === 0) { gridMonth = todayIso().slice(0, 7); }
+        else { const [y, m] = gridMonth.split("-").map(Number); const d = new Date(y, m - 1 + n, 1); gridMonth = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`; }
+        pickedDay = null; render(); return;
+      }
+      const cell = e.target.closest("[data-day]");
+      if (cell) { pickedDay = cell.dataset.day === pickedDay ? null : cell.dataset.day; render(); }
+    });
+    document.querySelectorAll(".cal-seg [data-view]").forEach((b) => b.addEventListener("click", () => {
+      view = b.dataset.view;
+      try { localStorage.setItem("arm-cal-view", view); } catch (_) {}
+      render();
+    }));
+
     const render = () => {
+      document.querySelectorAll(".cal-seg [data-view]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.view === view)));
       if (events === null) return;
       if (events === false) { list.innerHTML = `<p class="muted">${esc(t().err)}</p>`; return; }
+      gridEl.hidden = view !== "grid";
+      list.hidden = view === "grid";
+      if (view === "grid") { pastBtn.hidden = true; grid(); return; }
       const now = todayIso();
       const upcoming = events.filter((e) => e.date >= now);
       const past = events.filter((e) => e.date < now).reverse();
