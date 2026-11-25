@@ -569,7 +569,7 @@
     $(`#${prefix}Sp`).textContent = m.subpref || "—";
     $(`#${prefix}Pref`).textContent = m.prefecture || "—";
     $(`#${prefix}Dist`).textContent = m.district || "—";
-    $(`#${prefix}Code`).textContent = m.cardCode || "—";
+    $(`#${prefix}State`).textContent = m.state ? stateText(m.state).replace(/\s*\([A-Z]{2}\)$/, "") : "—";
   }
 
   // ---------------------------------------------------------

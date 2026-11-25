@@ -556,7 +556,7 @@ input::placeholder { color: #a3a9b5; font-style: italic; }
 .mcard-meta { row-gap: 12px; }
 .mcard-code { font-family: "Courier New", monospace; letter-spacing: 0.06em; color: #f4d27a !important; }
 .hint { display: block; margin-top: 4px; font-size: 0.8rem; color: var(--muted, #6b7280); }
-.mcard-known { display: block; margin-top: 2px; font-size: 0.85rem; font-style: italic; color: #d6dcea; }
+.mcard-known { display: block; margin-top: 1px; font-size: 0.74rem; font-style: italic; letter-spacing: 0.01em; color: #c9d1e3; }
 
 /* Calendar */
 .cal-month { font-size: 1.15rem; margin: 28px 0 12px; color: var(--navy, #2c4170); text-transform: capitalize; }
