@@ -191,15 +191,16 @@ function webLog_(result, id, first, last, known, digits, state, subpref, distric
   } catch (err) {}
 }
 
-/** Districts tab -> { 'Dounet': [{ name: 'Dindeya', code: 'DY' }], ... } */
+/** Districts tab -> { 'Dounet': [{ name: 'Dindeya', code: 'DY' }], ... } (one list per sub-prefecture) */
 function webDistricts_() {
   const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Districts');
   const out = {};
   if (!sh || sh.getLastRow() < 12) return out;
-  sh.getRange(12, 1, sh.getLastRow() - 11, 3).getDisplayValues().forEach(r => {
-    const sp = String(r[0]).trim(), name = String(r[1]).trim();
+  // Districts tab columns: A District | B Sub-prefecture | C Prefecture (formula) | D Code | E Villages | F Notes
+  sh.getRange(12, 1, sh.getLastRow() - 11, 4).getDisplayValues().forEach(r => {
+    const name = String(r[0]).trim(), sp = String(r[1]).trim();
     if (!sp || !name) return;
-    (out[sp] = out[sp] || []).push({ name: name, code: String(r[2]).trim() });
+    (out[sp] = out[sp] || []).push({ name: name, code: String(r[3]).trim() });
   });
   Object.keys(out).forEach(k => out[k].sort((a, b) => a.name.localeCompare(b.name)));
   return out;
