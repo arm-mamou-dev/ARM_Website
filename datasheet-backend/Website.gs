@@ -52,7 +52,7 @@ function doPost(e) {
 function doGet(e) {
   if (e && e.parameter && e.parameter.action === 'projects') return webJson_({ status: 'ok', projects: [] });
   if (e && e.parameter && e.parameter.action === 'calendar') return webJson_({ status: 'ok', events: webCalendar_() });
-  if (e && e.parameter && e.parameter.action === 'districts') return webJson_({ status: 'ok', districts: webDistricts_() });
+  if (e && e.parameter && e.parameter.action === 'districts') return webJson_({ status: 'ok', districts: webDistricts_(), region: webRegion_() });
   const rows = webRows_();
   const bySubpref = {};
   rows.forEach(r => { const s = r[WEB.COL.subpref - 1]; if (s) bySubpref[s] = (bySubpref[s] || 0) + 1; });
@@ -73,7 +73,8 @@ function webRegister_(data) {
 
   if (!first || !last || !state) return { status: 'error', message: 'Missing required fields.' };
   if (WEB.GROUPS.indexOf(group) === -1) return { status: 'error', message: 'Invalid group.' };
-  if (WEB.SUBPREFS.indexOf(subpref) === -1) return { status: 'error', message: 'Invalid sub-prefecture.' };
+  const regionNames = webRegion_().map(r => r.name);
+  if ((regionNames.length ? regionNames : WEB.SUBPREFS).indexOf(subpref) === -1) return { status: 'error', message: 'Invalid sub-prefecture.' };
   if (digits.length < 10) return { status: 'error', message: 'Invalid phone number.' };
   if (district && !(webDistricts_()[subpref] || []).some(d => d.name === district)) {
     return { status: 'error', message: 'Invalid district.' };
@@ -189,6 +190,15 @@ function webLog_(result, id, first, last, known, digits, state, subpref, distric
     sh.appendRow([stamp, result, id, webSafe_(webTitle_(first)), webSafe_(webTitle_(last)),
       known ? webSafe_(webTitle_(known)) : '', webPhone_(digits), webSafe_(webState_(state)), subpref, district, group, texts, code]);
   } catch (err) {}
+}
+
+/** 'Region of Mamou' tab -> [{ name: 'Dounet', prefecture: 'Timbo' }, ...] (all 4 prefectures of the region). */
+function webRegion_() {
+  const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Region of Mamou');
+  if (!sh || sh.getLastRow() < 12) return [];
+  return sh.getRange(12, 1, sh.getLastRow() - 11, 2).getDisplayValues()
+    .filter(r => String(r[0]).trim())
+    .map(r => ({ name: String(r[0]).trim(), prefecture: String(r[1]).trim() }));
 }
 
 /** Districts tab -> { 'Dounet': [{ name: 'Dindeya', code: 'DY' }], ... } (one list per sub-prefecture) */

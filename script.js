@@ -743,8 +743,25 @@
       $("#districtField").hidden = !list.length;
     };
     spSelect.addEventListener("change", fillDistricts);
+    // Sub-prefectures of the whole Mamou region (Mamou, Timbo, Dalaba, Pita), grouped by prefecture
+    const fillRegion = (region) => {
+      if (!region || !region.length) return;
+      const keep = spSelect.value;
+      while (spSelect.options.length > 1) spSelect.remove(1);
+      spSelect.querySelectorAll("optgroup").forEach((g) => g.remove());
+      const order = ["Mamou", "Timbo", "Dalaba", "Pita"];
+      const prefs = [...new Set(region.map((r) => r.prefecture || "Other"))].sort((a, b) => (order.indexOf(a) + 1 || 99) - (order.indexOf(b) + 1 || 99));
+      prefs.forEach((p) => {
+        const g = document.createElement("optgroup");
+        g.label = (lang === "fr" ? "Préfecture de " : "Prefecture of ") + p;
+        region.filter((r) => (r.prefecture || "Other") === p).forEach((r) => g.appendChild(new Option(r.name, r.name)));
+        spSelect.appendChild(g);
+      });
+      const m = region.find((r) => slugOf(r.name) === fromSp);
+      spSelect.value = keep || (m ? m.name : "");
+    };
     if (API) fetch(API + (API.includes("?") ? "&" : "?") + "action=districts").then((r) => r.json())
-      .then((d) => { districts = d.districts || {}; fillDistricts(); }).catch(() => {});
+      .then((d) => { districts = d.districts || {}; fillRegion(d.region); fillDistricts(); }).catch(() => {});
 
     const stateSelect = $("#state");
     STATES.forEach((s) => stateSelect.add(new Option(s, s)));

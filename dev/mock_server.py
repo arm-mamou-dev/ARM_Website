@@ -20,7 +20,10 @@ CSV = os.path.join(DATA_DIR, "members.csv")
 HEADERS = ["Member ID", "Registered At", "First Name", "Last Name", "Phone", "Group", "Sub-prefecture", "State of Residence", "Status", "Texts"]
 GROUPS = ["Male", "Female"]
 SUBPREFS = ["Mamou-Centre", "Bouliwel", "Dounet", "Gongoret", "Kégnéko", "Konkouré", "N'yagara",
-            "Ouré-Kaba", "Porédaka", "Saramoussaya", "Soyah", "Téguéréya", "Timbo", "Tolo"]
+            "Ouré-Kaba", "Porédaka", "Saramoussaya", "Soyah", "Téguéréya", "Timbo", "Tolo",
+            "Dalaba-Centre", "Koba", "Pita-Centre", "Timbi Madina"]
+REGION = [{"name": n, "prefecture": p} for n, p in [("Mamou-Centre", "Mamou"), ("Bouliwel", "Mamou"), ("Dounet", "Timbo"),
+          ("Timbo", "Timbo"), ("Tolo", "Mamou"), ("Dalaba-Centre", "Dalaba"), ("Koba", "Dalaba"), ("Pita-Centre", "Pita"), ("Timbi Madina", "Pita")]]
 
 
 def rows():
@@ -374,7 +377,7 @@ class Handler(SimpleHTTPRequestHandler):
                     {"date": "2027-02-27", "type": "General Assembly", "title": "Quarterly general assembly #1", "location": "", "status": "Planned"},
                     {"date": "2027-03-10", "type": "Fundraiser", "title": "Eid al-Fitr collection (date approximate)", "location": "", "status": "Planned"}]})
             if "action=districts" in self.path:
-                return self.send_json({"status": "ok", "districts": DISTRICTS})
+                return self.send_json({"status": "ok", "districts": DISTRICTS, "region": REGION})
             if "action=projects" in self.path:
                 with open(os.path.join(ROOT, "dev", "projects.json")) as f:
                     return self.send_json({"status": "ok", "projects": json.load(f)})
