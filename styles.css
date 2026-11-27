@@ -823,3 +823,11 @@ a { color: var(--navy); text-underline-offset: 2px; }
   .task, .task + .task { padding: 16px 0; border-right: 0; }
   .task + .task { border-top: 1px solid var(--border); }
 }
+
+/* Projects: simple two-column cards */
+.project-list { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+.project { display: flex; flex-direction: column; padding: 24px 26px; }
+.project-head h2 { font-size: 1.15rem; }
+.project-summary { margin-top: 10px; flex: 1; }
+.funding { margin-top: 16px; }
+@media (max-width: 860px) { .project-list { grid-template-columns: 1fr; } }

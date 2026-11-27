@@ -1189,12 +1189,8 @@
             <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><span style="width:${pct}%"></span></div>
             <p>${msg().raised(`<strong>${money(p.raised)}</strong>`, money(p.goal), pct)}</p>
           </div>` : "";
-        const phases = (p.phases || []).length ? `
-          <h3 class="phases-title">${msg().timeline}</h3>
-          <ol class="phases">${p.phases.map((ph) => {
-            const st = phaseStatus(ph);
-            return `<li class="phase is-${cls(st)}"><span class="phase-dot"></span><strong>${esc(ph.name)}</strong><span class="phase-dates">${range(ph.start, ph.end)}</span><span class="phase-status">${msg().pstatus[st] || esc(st)}</span></li>`;
-          }).join("")}</ol>` : "";
+        // Keep the page simple: no phase-by-phase timeline (it stays in the Gantt tabs)
+        const phases = "";
         return `
           <article class="project">
             <div class="project-head">
