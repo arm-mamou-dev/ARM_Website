@@ -444,7 +444,7 @@
         tResult: (s, n) => `${s} / ${n}`,
         tColTo: "To", tColResult: "Delivered to Twilio",
       },
-      pstatus: { "Planned": "Planned", "In progress": "In progress", "Completed": "Completed", "On hold": "On hold", "Not started": "Upcoming", "Done": "Done", "Delayed": "Delayed" },
+      pstatus: { "Planned": "Planned", "Fundraising": "Fundraising", "In progress": "In progress", "Completed": "Completed", "On hold": "On hold", "Not started": "Upcoming", "Done": "Done", "Delayed": "Delayed" },
     },
     fr: {
       required: "Ce champ est obligatoire.",
@@ -534,7 +534,7 @@
         tResult: (s, n) => `${s} / ${n}`,
         tColTo: "Destinataires", tColResult: "Remis à Twilio",
       },
-      pstatus: { "Planned": "Prévu", "In progress": "En cours", "Completed": "Terminé", "On hold": "En pause", "Not started": "À venir", "Done": "Terminé", "Delayed": "En retard" },
+      pstatus: { "Planned": "Prévu", "Fundraising": "Collecte de fonds", "In progress": "En cours", "Completed": "Terminé", "On hold": "En pause", "Not started": "À venir", "Done": "Terminé", "Delayed": "En retard" },
     },
   };
 
@@ -1158,7 +1158,7 @@
       if (p.start && today >= p.start) return "In progress";
       return "Not started";
     }
-    const cls = (s) => ({ "Done": "done", "Completed": "done", "In progress": "current", "Delayed": "late", "On hold": "late" }[s] || "upcoming");
+    const cls = (s) => ({ "Done": "done", "Completed": "done", "In progress": "current", "Fundraising": "current", "Delayed": "late", "On hold": "late" }[s] || "upcoming");
 
     function render() {
       if (failed) { list.innerHTML = `<p class="notice err">${msg().projErr}</p>`; return; }
@@ -1204,7 +1204,7 @@
               </div>
               <span class="badge ${cls(p.status) === "done" ? "active" : cls(p.status) === "upcoming" ? "inactive" : "pending"}">${msg().pstatus[p.status] || esc(p.status)}</span>
             </div>
-            <p class="project-summary${p.summary ? "" : " soon-text"}">${p.summary ? esc(p.summary) : msg().soonSection}</p>
+            ${(() => { const t = (lang === "fr" && p.summaryFr) || p.summary; return `<p class="project-summary${t ? "" : " soon-text"}">${t ? esc(t) : msg().soonSection}</p>`; })()}
             ${funding}
             ${sections}
             ${phases}

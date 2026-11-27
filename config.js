@@ -5,7 +5,7 @@ window.ARM_CONFIG = {
   GOOGLE_CLIENT_ID: "",
   // These pages stay "being built" until their data is connected to the DataSheet.
   ADMIN_READY: false,
-  PROJECTS_READY: false
+  PROJECTS_READY: true
 };
 
 // Local testing: on localhost the site uses the test backend in dev/mock_server.py,

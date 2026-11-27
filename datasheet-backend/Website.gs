@@ -19,7 +19,7 @@
  *   else -> next ARM-#### ID, row appended with Status = Pending -> { status: "ok", memberId }
  * POST { action: "lookup", memberId, phone }  -> Member ID AND phone must match (phone never returned)
  * GET                    -> { status: "ok", count, bySubpref }
- * GET ?action=projects   -> { status: "ok", projects: [] }  (project data comes in a later phase)
+ * GET ?action=projects   -> { status: "ok", projects: [...] }  (Project tab rows with Show on website = Yes; phases from each Timeline tab)
  * GET ?action=calendar   -> { status: "ok", events }  (Meetings tab rows with Show on website = Yes;
  *                           only date, type, title, location and status: never notes or names)
  */
@@ -50,7 +50,7 @@ function doPost(e) {
 }
 
 function doGet(e) {
-  if (e && e.parameter && e.parameter.action === 'projects') return webJson_({ status: 'ok', projects: [] });
+  if (e && e.parameter && e.parameter.action === 'projects') return webJson_({ status: 'ok', projects: webProjects_() });
   if (e && e.parameter && e.parameter.action === 'calendar') return webJson_({ status: 'ok', events: webCalendar_() });
   if (e && e.parameter && e.parameter.action === 'districts') return webJson_({ status: 'ok', districts: webDistricts_(), region: webRegion_() });
   const rows = webRows_();
@@ -251,4 +251,54 @@ function webJson_(obj) {
 function testWebsiteConnection() {
   const rows = webRows_();
   Logger.log('Members found: ' + rows.length + '. Next row to write: ' + (webLastIdRow_(webSheet_()) + 1));
+}
+
+
+/**
+ * Projects page. Project tab, header row 11, data from row 12:
+ * A Project | D Start | E Target | F Raised | J Status | L Summary (EN) | M Summary (FR) | N Timeline tab | O Show on website
+ * Phases come from the Timeline tab's phase rows ("1. Organize" in column B, start F, end G).
+ * Only public fields are sent; Notes, Lead, Spent and Balance stay in the sheet.
+ */
+function webProjects_() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sh = ss.getSheetByName('Project');
+  if (!sh || sh.getLastRow() < 12) return [];
+  const tz = ss.getSpreadsheetTimeZone();
+  const iso = v => (v instanceof Date && !isNaN(v)) ? Utilities.formatDate(v, tz, 'yyyy-MM-dd') : '';
+  const num = v => (typeof v === 'number' && isFinite(v)) ? v : 0;
+  const out = [];
+  sh.getRange(12, 1, sh.getLastRow() - 11, 15).getValues().forEach(r => {
+    const title = String(r[0]).trim();
+    if (!title || String(r[14]).trim().toLowerCase() !== 'yes') return;
+    const phases = webPhases_(ss, String(r[13]).trim(), iso);
+    const starts = phases.map(p => p.start).filter(Boolean).sort();
+    const ends = phases.map(p => p.end).filter(Boolean).sort();
+    out.push({
+      id: title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''),
+      title: title,
+      summary: String(r[11]).trim(),
+      summaryFr: String(r[12]).trim(),
+      status: String(r[9]).trim() || 'Planned',
+      start: starts[0] || iso(r[3]),
+      end: ends.length ? ends[ends.length - 1] : '',
+      goal: num(r[4]),
+      raised: num(r[5]),
+      parent: '',
+      phases: phases
+    });
+  });
+  return out;
+}
+
+function webPhases_(ss, tabName, iso) {
+  const sh = tabName && ss.getSheetByName(tabName);
+  if (!sh || sh.getLastRow() < 6) return [];
+  const phases = [];
+  sh.getRange(6, 1, sh.getLastRow() - 5, 7).getValues().forEach(r => {
+    const name = String(r[1]).trim();
+    const m = name.match(/^\d+\.\s+(.+)$/);
+    if (String(r[0]).trim() === '' && m) phases.push({ name: m[1], start: iso(r[5]), end: iso(r[6]), status: '' });
+  });
+  return phases;
 }
