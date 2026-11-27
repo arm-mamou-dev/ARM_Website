@@ -792,3 +792,50 @@ input[type="text"], input[type="tel"], input[type="password"], select, textarea 
 .sp-partner { background: var(--navy-tint); }
 .sp-note { margin: 0 0 16px; font-size: 0.88rem; color: var(--text-3); }
 @media (max-width: 600px) { .pref-tag { margin-left: 0; } }
+
+/* Federation hierarchy tree: Region > Prefecture > Sub-prefecture > District */
+.t-legend { list-style: none; display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 24px; padding: 0; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-3); }
+.t-legend li + li::before { content: "\203A"; margin-right: 6px; color: var(--border-2); }
+.tree { --line: var(--border-2); }
+.t-node { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 2px; padding: 14px 16px; border-radius: 8px; }
+.t-level { font-size: 0.68rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; }
+.t-root { width: min(420px, 100%); margin: 0 auto; background: var(--navy); color: #c9d4e3; box-shadow: var(--shadow-md); }
+.t-root .t-level { color: var(--gold); }
+.t-root strong { color: #fff; font-size: 1.35rem; }
+.t-root .t-sub { font-size: 0.9rem; }
+.t-cols { list-style: none; margin: 0; padding: 28px 0 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; position: relative; }
+.t-cols::before { content: ""; position: absolute; top: 0; left: 50%; width: 2px; height: 14px; background: var(--line); transform: translateX(-50%); }
+.t-cols::after { content: ""; position: absolute; top: 14px; left: 12.5%; right: 12.5%; height: 2px; background: var(--line); }
+.t-col { position: relative; }
+.t-col::before { content: ""; position: absolute; top: -14px; left: 50%; width: 2px; height: 14px; background: var(--line); transform: translateX(-50%); }
+.t-pref { position: relative; background: #fff; border: 1px solid var(--border); border-top: 3px solid var(--navy); box-shadow: var(--shadow-sm); }
+.t-pref.is-partner { border-top-color: var(--accent); }
+.t-pref .t-level { color: var(--text-3); }
+.t-pref strong { font-size: 1.15rem; color: var(--navy); }
+.t-pref .t-sub { font-size: 0.85rem; color: var(--text-2); }
+.t-pref .pref-tag { margin: 6px 0 0; }
+.t-sps { list-style: none; margin: 0 0 0 18px; padding: 10px 0 0; position: relative; }
+.t-sps::before { content: ""; position: absolute; top: 0; bottom: 20px; left: 0; width: 2px; background: var(--line); }
+.t-sps li { position: relative; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px 8px; margin: 0 0 6px 16px; padding: 8px 12px; background: #fff; border: 1px solid var(--border); border-radius: 6px; font-size: 0.9rem; transition: border-color .15s; }
+.t-sps li::before { content: ""; position: absolute; left: -17px; top: 50%; width: 16px; height: 2px; background: var(--line); }
+.t-sps li:hover { border-color: var(--navy); }
+.t-sps li.is-center { background: var(--navy-tint); }
+.t-name { font-weight: 600; color: var(--navy); text-decoration: none; }
+.t-name::after { content: ""; position: absolute; inset: 0; }
+.t-meta { display: flex; flex-direction: column; align-items: flex-end; font-size: 0.74rem; color: var(--text-3); line-height: 1.35; }
+.t-meta .sp-count { margin: 0; padding: 0; }
+.t-sps .sp-ext { position: relative; z-index: 1; flex-basis: 100%; font-size: 0.74rem; color: var(--green); text-decoration: none; }
+.t-key { margin: 20px 0 0; font-size: 0.85rem; color: var(--text-3); }
+.t-key-partner::before { content: ""; display: inline-block; width: 18px; height: 3px; margin-right: 8px; vertical-align: middle; background: var(--accent); }
+@media (max-width: 960px) {
+  .t-cols { grid-template-columns: 1fr 1fr; gap: 28px 20px; }
+  .t-cols::after { left: 25%; right: 25%; }
+}
+@media (max-width: 600px) {
+  .t-cols { grid-template-columns: 1fr; padding: 0 0 0 18px; margin-top: 0; }
+  .t-cols::before { left: 0; top: 0; bottom: 0; height: auto; transform: none; }
+  .t-cols::after { display: none; }
+  .t-col { padding-top: 20px; }
+  .t-col::before { top: 50px; left: -18px; width: 18px; height: 2px; transform: none; }
+  .t-root { margin: 0; }
+}

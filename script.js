@@ -246,6 +246,13 @@
     "sp.prefOf": "Préfecture de",
     "sp.provisional": "La répartition des sous-préfectures entre Mamou et Timbo est provisoire jusqu'à la publication de la liste officielle.",
     "sp.noPop": "La population par sous-préfecture du recensement de 2014 n'est pas encore disponible pour cette préfecture.",
+    "fed.lvl.region": "Région",
+    "fed.lvl.pref": "Préfecture",
+    "fed.lvl.sp": "Sous-préfecture",
+    "fed.lvl.dist": "District",
+    "fed.regionName": "Région de Mamou",
+    "fed.prefs": "préfectures",
+    "fed.partnerShort": "Partenaire",
     "fed.partner": "Partenaire : association propre aux États-Unis",
     "fed.provisional": "Liste provisoire",
     "fed.subprefs": "sous-préfectures",
@@ -1097,6 +1104,26 @@
     };
     rerender.push(show);
     fetch(API).then((r) => r.json()).then((d) => { by = d.bySubpref || {}; show(); }).catch(() => {});
+
+    // District counts in the hierarchy (Districts tab)
+    let dist = null;
+    const showDist = () => {
+      if (!dist) return;
+      const fr = lang === "fr";
+      const word = (n) => `${n} ${n === 1 ? "district" : "districts"}`;
+      let total = 0;
+      document.querySelectorAll(".sp-dist[data-sp]").forEach((el) => {
+        const n = (dist[el.dataset.sp] || []).length; total += n;
+        el.textContent = n ? word(n) : "";
+      });
+      const t = $("#fedDistricts");
+      if (t && total) t.textContent = ` · ${total.toLocaleString(fr ? "fr-FR" : "en-US")} ${total === 1 ? "district" : "districts"}`;
+    };
+    if ($("#fedDistricts")) {
+      rerender.push(showDist);
+      fetch(API + (API.includes("?") ? "&" : "?") + "action=districts").then((r) => r.json())
+        .then((d) => { dist = d.districts || {}; showDist(); }).catch(() => {});
+    }
   }
 
   // ---------------------------------------------------------

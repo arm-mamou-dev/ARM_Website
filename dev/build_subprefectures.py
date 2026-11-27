@@ -222,10 +222,10 @@ def page(i, head, foot):
 
 
 def about_grid():
-    """Rewrites the sub-prefecture list on federation.html, grouped by prefecture."""
+    """Rewrites the hierarchy on federation.html: Region > Prefectures > Sub-prefectures (> districts, counted live)."""
     path = os.path.join(ROOT, "federation.html")
     html = open(path, encoding="utf-8").read()
-    blocks = []
+    cols = []
     for p in PREFS:
         items = []
         for name, pp, _, urban in PLACES:
@@ -234,22 +234,45 @@ def about_grid():
             label = f'<span data-i18n="about.urban.{p}">{p} (urban commune)</span>' if urban else esc(name)
             site = WEBSITES.get(name)
             extra = f'<a class="sp-ext" href="{site}" target="_blank" rel="noopener">{domain(site)} ↗</a>' if site else ""
-            count = f'<span class="sp-count" data-sp="{esc(name)}"></span>'
-            items.append("              <li" + (' class="is-center"' if urban else "") + f'><a href="mamou/{slug(name)}.html">{label}</a>{count}{extra}</li>')
+            items.append(
+                "                <li" + (' class="is-center"' if urban else "") + ">"
+                f'<a class="t-name" href="mamou/{slug(name)}.html">{label}</a>'
+                f'<span class="t-meta"><span class="sp-dist" data-sp="{esc(name)}"></span><span class="sp-count" data-sp="{esc(name)}"></span></span>{extra}</li>')
         n = sum(1 for x in PLACES if x[1] == p)
-        tag = (f'<span class="pref-tag partner" data-i18n="fed.partner">Partner: own association in the USA</span>' if p in PARTNERS
+        tag = (f'<span class="pref-tag partner" data-i18n="fed.partnerShort">Partner</span>' if p in PARTNERS
                else f'<span class="pref-tag" data-i18n="fed.provisional">List provisional</span>' if p in PROVISIONAL else "")
-        blocks.append(f'''          <section class="pref-block" id="pref-{p.lower()}">
-            <div class="pref-head"><h3><span data-i18n="sp.prefOf">Prefecture of</span> {p}</h3><span class="pref-n">{n} <span data-i18n="fed.subprefs">sub-prefectures</span></span>{tag}</div>
-            <ul class="subpref-list">
+        cols.append(f'''            <li class="t-col" id="pref-{p.lower()}">
+              <div class="t-node t-pref{' is-partner' if p in PARTNERS else ''}">
+                <span class="t-level" data-i18n="fed.lvl.pref">Prefecture</span>
+                <strong>{p}</strong>
+                <span class="t-sub">{n} <span data-i18n="fed.subprefs">sub-prefectures</span></span>
+                {tag}
+              </div>
+              <ul class="t-sps">
 {chr(10).join(items)}
+              </ul>
+            </li>''')
+    total = len(PLACES)
+    new = f'''<!-- SP-LIST (built by dev/build_subprefectures.py) -->
+          <ol class="t-legend" aria-label="Levels">
+            <li data-i18n="fed.lvl.region">Region</li>
+            <li data-i18n="fed.lvl.pref">Prefecture</li>
+            <li data-i18n="fed.lvl.sp">Sub-prefecture</li>
+            <li data-i18n="fed.lvl.dist">District</li>
+          </ol>
+          <div class="tree">
+            <div class="t-node t-root">
+              <span class="t-level" data-i18n="fed.lvl.region">Region</span>
+              <strong data-i18n="fed.regionName">Region of Mamou</strong>
+              <span class="t-sub">{len(PREFS)} <span data-i18n="fed.prefs">prefectures</span> · {total} <span data-i18n="fed.subprefs">sub-prefectures</span><span id="fedDistricts"></span></span>
+            </div>
+            <ul class="t-cols">
+{chr(10).join(cols)}
             </ul>
-          </section>''')
-    new = "<!-- SP-LIST (built by dev/build_subprefectures.py) -->\n" + "\n".join(blocks) + "\n          <!-- /SP-LIST -->"
-    if "<!-- SP-LIST" in html:
-        html = re.sub(r"<!-- SP-LIST.*?<!-- /SP-LIST -->", lambda m: new, html, count=1, flags=re.S)
-    else:
-        html = re.sub(r'<ul class="subpref-list">.*?</ul>', lambda m: new, html, count=1, flags=re.S)
+          </div>
+          <p class="t-key"><span class="t-key-partner" data-i18n="fed.partner">Partner: own association in the USA</span></p>
+          <!-- /SP-LIST -->'''
+    html = re.sub(r"<!-- SP-LIST.*?<!-- /SP-LIST -->", lambda m: new, html, count=1, flags=re.S)
     open(path, "w", encoding="utf-8").write(html)
 
 
