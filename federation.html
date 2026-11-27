@@ -48,7 +48,7 @@
     <section class="page-head">
       <div class="container">
         <h1 data-i18n="fed.title">The ARM federation</h1>
-        <p class="intro" data-i18n="fed.intro">ARM is run as a federal system: the associations of Mamou's 14 communes and sub-prefectures are united under one federation.</p>
+        <p class="intro" data-i18n="fed.intro">The Mamou region has four prefectures: Mamou, Timbo, Dalaba and Pita, with 36 sub-prefectures. ARM unites the associations of Mamou and Timbo, and works as a partner with the Dalaba and Pita associations in the USA.</p>
       </div>
     </section>
     <section class="page-body">
@@ -59,7 +59,7 @@
             <span data-i18n="fed.t1">Federal level: leadership, shared projects and the member register</span>
           </li>
           <li class="tier">
-            <strong data-i18n="fed.t2t">14 sub-prefecture associations</strong>
+            <strong data-i18n="fed.t2t">Sub-prefecture associations</strong>
             <span data-i18n="fed.t2">Local level: each community organizes its own members and activities</span>
           </li>
           <li class="tier">
@@ -70,25 +70,67 @@
 
         <div class="subpref" id="subprefectures">
           <div class="subpref-head">
-            <h2 class="h-sm" data-i18n="fed.listTitle">Member sub-prefectures</h2>
-            <p data-i18n="fed.listText">Select a sub-prefecture to see its page. Websites are shown where the local association has one.</p>
+            <h2 class="h-sm" data-i18n="fed.listTitle">Sub-prefectures of the Mamou region</h2>
+            <p data-i18n="fed.listText">All 36 sub-prefectures of the Mamou region, by prefecture. Select one to see its page. Websites are shown where the local association has one.</p>
           </div>
-          <ul class="subpref-list">
-            <li class="is-center"><a href="mamou/mamou-centre.html"><span data-i18n="about.urban">Mamou (urban commune)</span></a><span class="sp-count" data-sp="Mamou-Centre"></span></li>
-            <li><a href="mamou/bouliwel.html">Bouliwel</a><span class="sp-count" data-sp="Bouliwel"></span></li>
-            <li><a href="mamou/dounet.html">Dounet</a><span class="sp-count" data-sp="Dounet"></span><a class="sp-ext" href="https://dounet.org" target="_blank" rel="noopener">dounet.org ↗</a></li>
-            <li><a href="mamou/gongoret.html">Gongoret</a><span class="sp-count" data-sp="Gongoret"></span></li>
-            <li><a href="mamou/kegneko.html">Kégnéko</a><span class="sp-count" data-sp="Kégnéko"></span></li>
-            <li><a href="mamou/konkoure.html">Konkouré</a><span class="sp-count" data-sp="Konkouré"></span></li>
-            <li><a href="mamou/nyagara.html">N'yagara</a><span class="sp-count" data-sp="N'yagara"></span></li>
-            <li><a href="mamou/oure-kaba.html">Ouré-Kaba</a><span class="sp-count" data-sp="Ouré-Kaba"></span></li>
-            <li><a href="mamou/poredaka.html">Porédaka</a><span class="sp-count" data-sp="Porédaka"></span></li>
-            <li><a href="mamou/saramoussaya.html">Saramoussaya</a><span class="sp-count" data-sp="Saramoussaya"></span></li>
-            <li><a href="mamou/soyah.html">Soyah</a><span class="sp-count" data-sp="Soyah"></span></li>
-            <li><a href="mamou/teguereya.html">Téguéréya</a><span class="sp-count" data-sp="Téguéréya"></span></li>
-            <li><a href="mamou/timbo.html">Timbo</a><span class="sp-count" data-sp="Timbo"></span></li>
-            <li><a href="mamou/tolo.html">Tolo</a><span class="sp-count" data-sp="Tolo"></span><a class="sp-ext" href="https://adtusa.org" target="_blank" rel="noopener">adtusa.org ↗</a></li>
-          </ul>
+          <!-- SP-LIST (built by dev/build_subprefectures.py) -->
+          <section class="pref-block" id="pref-mamou">
+            <div class="pref-head"><h3><span data-i18n="sp.prefOf">Prefecture of</span> Mamou</h3><span class="pref-n">7 <span data-i18n="fed.subprefs">sub-prefectures</span></span><span class="pref-tag" data-i18n="fed.provisional">List provisional</span></div>
+            <ul class="subpref-list">
+              <li class="is-center"><a href="mamou/mamou-centre.html"><span data-i18n="about.urban.Mamou">Mamou (urban commune)</span></a><span class="sp-count" data-sp="Mamou-Centre"></span></li>
+              <li><a href="mamou/bouliwel.html">Bouliwel</a><span class="sp-count" data-sp="Bouliwel"></span></li>
+              <li><a href="mamou/gongoret.html">Gongoret</a><span class="sp-count" data-sp="Gongoret"></span></li>
+              <li><a href="mamou/konkoure.html">Konkouré</a><span class="sp-count" data-sp="Konkouré"></span></li>
+              <li><a href="mamou/oure-kaba.html">Ouré-Kaba</a><span class="sp-count" data-sp="Ouré-Kaba"></span></li>
+              <li><a href="mamou/soyah.html">Soyah</a><span class="sp-count" data-sp="Soyah"></span></li>
+              <li><a href="mamou/tolo.html">Tolo</a><span class="sp-count" data-sp="Tolo"></span><a class="sp-ext" href="https://adtusa.org" target="_blank" rel="noopener">adtusa.org ↗</a></li>
+            </ul>
+          </section>
+          <section class="pref-block" id="pref-timbo">
+            <div class="pref-head"><h3><span data-i18n="sp.prefOf">Prefecture of</span> Timbo</h3><span class="pref-n">7 <span data-i18n="fed.subprefs">sub-prefectures</span></span><span class="pref-tag" data-i18n="fed.provisional">List provisional</span></div>
+            <ul class="subpref-list">
+              <li><a href="mamou/timbo.html">Timbo</a><span class="sp-count" data-sp="Timbo"></span></li>
+              <li><a href="mamou/dounet.html">Dounet</a><span class="sp-count" data-sp="Dounet"></span><a class="sp-ext" href="https://dounet.org" target="_blank" rel="noopener">dounet.org ↗</a></li>
+              <li><a href="mamou/kegneko.html">Kégnéko</a><span class="sp-count" data-sp="Kégnéko"></span></li>
+              <li><a href="mamou/nyagara.html">N'yagara</a><span class="sp-count" data-sp="N'yagara"></span></li>
+              <li><a href="mamou/poredaka.html">Porédaka</a><span class="sp-count" data-sp="Porédaka"></span></li>
+              <li><a href="mamou/saramoussaya.html">Saramoussaya</a><span class="sp-count" data-sp="Saramoussaya"></span></li>
+              <li><a href="mamou/teguereya.html">Téguéréya</a><span class="sp-count" data-sp="Téguéréya"></span></li>
+            </ul>
+          </section>
+          <section class="pref-block" id="pref-dalaba">
+            <div class="pref-head"><h3><span data-i18n="sp.prefOf">Prefecture of</span> Dalaba</h3><span class="pref-n">10 <span data-i18n="fed.subprefs">sub-prefectures</span></span><span class="pref-tag partner" data-i18n="fed.partner">Partner: own association in the USA</span></div>
+            <ul class="subpref-list">
+              <li class="is-center"><a href="mamou/dalaba-centre.html"><span data-i18n="about.urban.Dalaba">Dalaba (urban commune)</span></a><span class="sp-count" data-sp="Dalaba-Centre"></span></li>
+              <li><a href="mamou/bodie.html">Bodié</a><span class="sp-count" data-sp="Bodié"></span></li>
+              <li><a href="mamou/ditinn.html">Ditinn</a><span class="sp-count" data-sp="Ditinn"></span></li>
+              <li><a href="mamou/kaala.html">Kaala</a><span class="sp-count" data-sp="Kaala"></span></li>
+              <li><a href="mamou/kankalabe.html">Kankalabé</a><span class="sp-count" data-sp="Kankalabé"></span></li>
+              <li><a href="mamou/kebali.html">Kébali</a><span class="sp-count" data-sp="Kébali"></span></li>
+              <li><a href="mamou/koba.html">Koba</a><span class="sp-count" data-sp="Koba"></span></li>
+              <li><a href="mamou/mafara.html">Mafara</a><span class="sp-count" data-sp="Mafara"></span></li>
+              <li><a href="mamou/mitty.html">Mitty</a><span class="sp-count" data-sp="Mitty"></span></li>
+              <li><a href="mamou/mombeya.html">Mombeya</a><span class="sp-count" data-sp="Mombeya"></span></li>
+            </ul>
+          </section>
+          <section class="pref-block" id="pref-pita">
+            <div class="pref-head"><h3><span data-i18n="sp.prefOf">Prefecture of</span> Pita</h3><span class="pref-n">12 <span data-i18n="fed.subprefs">sub-prefectures</span></span><span class="pref-tag partner" data-i18n="fed.partner">Partner: own association in the USA</span></div>
+            <ul class="subpref-list">
+              <li class="is-center"><a href="mamou/pita-centre.html"><span data-i18n="about.urban.Pita">Pita (urban commune)</span></a><span class="sp-count" data-sp="Pita-Centre"></span></li>
+              <li><a href="mamou/bantignel.html">Bantignel</a><span class="sp-count" data-sp="Bantignel"></span></li>
+              <li><a href="mamou/brouwal-tappe.html">Brouwal Tappé</a><span class="sp-count" data-sp="Brouwal Tappé"></span></li>
+              <li><a href="mamou/donghol-touma.html">Donghol Touma</a><span class="sp-count" data-sp="Donghol Touma"></span></li>
+              <li><a href="mamou/gongore.html">Gongoré</a><span class="sp-count" data-sp="Gongoré"></span></li>
+              <li><a href="mamou/ley-miro.html">Ley Miro</a><span class="sp-count" data-sp="Ley Miro"></span></li>
+              <li><a href="mamou/maci.html">Maci</a><span class="sp-count" data-sp="Maci"></span></li>
+              <li><a href="mamou/ninguelande.html">Ninguélandé</a><span class="sp-count" data-sp="Ninguélandé"></span></li>
+              <li><a href="mamou/sangareah.html">Sangaréah</a><span class="sp-count" data-sp="Sangaréah"></span></li>
+              <li><a href="mamou/sintaly.html">Sintaly</a><span class="sp-count" data-sp="Sintaly"></span></li>
+              <li><a href="mamou/timbi-madina.html">Timbi Madina</a><span class="sp-count" data-sp="Timbi Madina"></span></li>
+              <li><a href="mamou/timbi-tounni.html">Timbi Tounni</a><span class="sp-count" data-sp="Timbi Tounni"></span></li>
+            </ul>
+          </section>
+          <!-- /SP-LIST -->
         </div>
       </div>
     </section>

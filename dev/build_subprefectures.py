@@ -11,32 +11,69 @@ import os, re, unicodedata
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "mamou")
 
-# (name, population 2014, is urban commune)
+# All 36 sub-prefectures of the Mamou region (same list as the DataSheet's "Region of Mamou" tab).
+# (name, prefecture, population 2014 or None, is urban commune)
+# Mamou/Timbo split is provisional until the official Timbo list is published.
+# Dalaba and Pita: no 2014 census figure per sub-prefecture was found, so none is shown.
 PLACES = [
-    ("Mamou-Centre", 83008, True),
-    ("Bouliwel", 20881, False),
-    ("Dounet", 30534, False),
-    ("Gongoret", 8731, False),
-    ("Kégnéko", 19134, False),
-    ("Konkouré", 13039, False),
-    ("N'yagara", 12319, False),
-    ("Ouré-Kaba", 31804, False),
-    ("Porédaka", 22153, False),
-    ("Saramoussaya", 23216, False),
-    ("Soyah", 22782, False),
-    ("Téguéréya", 9298, False),
-    ("Timbo", 13364, False),
-    ("Tolo", 8718, False),
+    ("Mamou-Centre", "Mamou", 83008, True),
+    ("Bouliwel", "Mamou", 20881, False),
+    ("Gongoret", "Mamou", 8731, False),
+    ("Konkouré", "Mamou", 13039, False),
+    ("Ouré-Kaba", "Mamou", 31804, False),
+    ("Soyah", "Mamou", 22782, False),
+    ("Tolo", "Mamou", 8718, False),
+    ("Timbo", "Timbo", 13364, False),
+    ("Dounet", "Timbo", 30534, False),
+    ("Kégnéko", "Timbo", 19134, False),
+    ("N'yagara", "Timbo", 12319, False),
+    ("Porédaka", "Timbo", 22153, False),
+    ("Saramoussaya", "Timbo", 23216, False),
+    ("Téguéréya", "Timbo", 9298, False),
+    ("Dalaba-Centre", "Dalaba", None, True),
+    ("Bodié", "Dalaba", None, False),
+    ("Ditinn", "Dalaba", None, False),
+    ("Kaala", "Dalaba", None, False),
+    ("Kankalabé", "Dalaba", None, False),
+    ("Kébali", "Dalaba", None, False),
+    ("Koba", "Dalaba", None, False),
+    ("Mafara", "Dalaba", None, False),
+    ("Mitty", "Dalaba", None, False),
+    ("Mombeya", "Dalaba", None, False),
+    ("Pita-Centre", "Pita", None, True),
+    ("Bantignel", "Pita", None, False),
+    ("Brouwal Tappé", "Pita", None, False),
+    ("Donghol Touma", "Pita", None, False),
+    ("Gongoré", "Pita", None, False),
+    ("Ley Miro", "Pita", None, False),
+    ("Maci", "Pita", None, False),
+    ("Ninguélandé", "Pita", None, False),
+    ("Sangaréah", "Pita", None, False),
+    ("Sintaly", "Pita", None, False),
+    ("Timbi Madina", "Pita", None, False),
+    ("Timbi Tounni", "Pita", None, False),
 ]
-TOTAL = sum(p[1] for p in PLACES)
+PREFS = ["Mamou", "Timbo", "Dalaba", "Pita"]
+PARTNERS = {"Dalaba", "Pita"}       # have their own associations in the USA: allies, not ARM members
+PROVISIONAL = {"Mamou", "Timbo"}    # split not official yet
+PREF_TOTAL = {p: sum(x[2] for x in PLACES if x[1] == p) for p in PREFS if all(x[2] for x in PLACES if x[1] == p)}
+TOTAL = sum(x[2] or 0 for x in PLACES)
 
-# Map coordinates (lat, lon) from OpenStreetMap (Nominatim)
+# Map coordinates (lat, lon): Mamou/Timbo from OpenStreetMap (Nominatim), Dalaba/Pita from fr.wikipedia infoboxes
 COORDS = {
     "Mamou-Centre": (10.3741, -12.0836), "Bouliwel": (10.6102, -12.1893), "Dounet": (10.5134, -11.9187),
     "Gongoret": (10.7712, -11.9520), "Kégnéko": (10.5411, -11.7809), "Konkouré": (10.3110, -12.2363),
     "N'yagara": (10.7609, -11.7936), "Ouré-Kaba": (10.1371, -11.6615), "Porédaka": (10.7325, -12.0676),
     "Saramoussaya": (10.6796, -11.6299), "Soyah": (10.2878, -11.9725), "Téguéréya": (11.0516, -11.6174),
     "Timbo": (10.6343, -11.8284), "Tolo": (10.5402, -12.1462),
+    "Dalaba-Centre": (10.6917, -12.2500), "Bodié": (11.0333, -12.0667), "Ditinn": (10.8833, -12.1833),
+    "Kaala": (10.8167, -12.1667), "Kankalabé": (11.1500, -12.0000), "Kébali": (10.9500, -12.2000),
+    "Koba": (10.6167, -12.3167), "Mafara": (10.8333, -12.2667), "Mitty": (10.8333, -12.3167),
+    "Mombeya": (11.2167, -12.0667),
+    "Pita-Centre": (11.0596, -12.3956), "Bantignel": (11.1167, -12.3000), "Brouwal Tappé": (11.0000, -12.3833),
+    "Donghol Touma": (11.8390, -12.5508), "Gongoré": (10.8333, -12.4167), "Ley Miro": (10.9333, -12.8833),
+    "Maci": (10.9167, -12.4333), "Ninguélandé": (11.1833, -12.6667), "Sangaréah": (10.6333, -12.8500),
+    "Sintaly": (11.1000, -12.4333), "Timbi Madina": (11.2000, -12.5333), "Timbi Tounni": (11.1167, -12.4833),
 }
 
 # Websites of each sub-prefecture's association (add more as they are confirmed)
@@ -73,9 +110,9 @@ def shell():
 
 
 def page(i, head, foot):
-    name, pop, urban = PLACES[i]
+    name, pref, pop, urban = PLACES[i]
     s = slug(name)
-    share = pop / TOTAL * 100
+    share = pop / PREF_TOTAL[pref] * 100 if pop and pref in PREF_TOTAL else None
     prev_p, next_p = PLACES[i - 1], PLACES[(i + 1) % len(PLACES)]
     lat, lon = COORDS[name]
     d = 0.04 if urban else 0.08
@@ -90,18 +127,40 @@ def page(i, head, foot):
             <a href="{site}" target="_blank" rel="noopener" class="btn btn-sm">{domain(site)} ↗</a>
           </div>''' if site else ""
 
-    kind_en = "Urban commune of Mamou prefecture, Guinea" if urban else "Sub-prefecture of Mamou prefecture, Guinea"
-    kind_key = "sp.kindUrban" if urban else "sp.kind"
+    kind_en = f"{'Urban commune' if urban else 'Sub-prefecture'} of {pref} prefecture, Mamou region, Guinea"
+    kind_key = f"sp.{'kindUrban' if urban else 'kind'}.{pref}"
+    if pref in PARTNERS:
+        fed_html = f'''<div class="sp-fed sp-partner">
+            <strong data-i18n="sp.partner.{pref}">Partner prefecture: {pref} has its own association in the USA</strong>
+            <span><span data-i18n="sp.fedCount">ARM members from this community:</span> <span id="spMembers" class="sp-members">–</span></span>
+          </div>'''
+    else:
+        fed_html = '''<div class="sp-fed">
+            <strong data-i18n="sp.fedMember">Member of the ARM federation</strong>
+            <span><span data-i18n="sp.fedCount">ARM members from this community:</span> <span id="spMembers" class="sp-members">–</span></span>
+          </div>'''
+    prov = '\n          <p class="sp-note" data-i18n="sp.provisional">The split of sub-prefectures between Mamou and Timbo is provisional until the official list is published.</p>' if pref in PROVISIONAL else ""
+    facts = ""
+    if pop:
+        facts += f'\n            <div><dt data-i18n="sp.pop">Population (2014 census)</dt><dd><span class="num" data-n="{pop}">{pop:,}</span></dd></div>'
+    if share is not None:
+        facts += f'\n            <div><dt data-i18n="sp.share">Share of the prefecture</dt><dd><span class="num" data-n="{share:.1f}" data-pct>{share:.1f}%</span></dd></div>'
+    facts += f'\n            <div><dt data-i18n="sp.prefecture">Prefecture</dt><dd>{pref}</dd></div>'
+    facts += '\n            <div><dt data-i18n="sp.country">Country</dt><dd data-i18n="sp.guinea">Guinea</dd></div>'
+    source = '<span data-i18n="sp.source">Population: 2014 General Census (RGPH-3), Institut National de la Statistique de Guinée.</span>' if pop else '<span data-i18n="sp.noPop">Population by sub-prefecture from the 2014 census is not yet available for this prefecture.</span>'
 
-    others = "\n".join(
-        "            <li" + (' class="is-current"' if j == i else "") + ">"
-        + (f'<span aria-current="page">{esc(n)}</span>' if j == i else f'<a href="{slug(n)}.html">{esc(n)}</a>')
-        + "</li>"
-        for j, (n, _, _) in enumerate(PLACES)
-    )
+    groups = []
+    for p in PREFS:
+        lis = "\n".join(
+            "              <li" + (' class="is-current"' if n == name else "") + ">"
+            + (f'<span aria-current="page">{esc(n)}</span>' if n == name else f'<a href="{slug(n)}.html">{esc(n)}</a>')
+            + "</li>"
+            for n, pp, _, _ in PLACES if pp == p)
+        groups.append(f'            <div class="sp-group">\n              <h3 class="sp-group-title"><span data-i18n="sp.prefOf">Prefecture of</span> {p}</h3>\n              <ul class="subpref-list">\n{lis}\n              </ul>\n            </div>')
+    others = "\n".join(groups)
 
     title = f"{name} – ARM Mamou"
-    desc = f"{name}: {'urban commune' if urban else 'sub-prefecture'} of Mamou, Guinea. Population {pop:,} (2014 census)."
+    desc = f"{name}: {'urban commune' if urban else 'sub-prefecture'} of {pref} prefecture, Mamou region, Guinea." + (f" Population {pop:,} (2014 census)." if pop else "")
     h = head.replace("<title>About – ARM Mamou</title>", f"<title>{esc(title)}</title>")
     h = h.replace('data-page="about"', f'data-page="federation" data-sp="{esc(name)}"')
     h = re.sub(r'<meta name="description" content="[^"]*">', f'<meta name="description" content="{esc(desc)}">', h)
@@ -109,7 +168,7 @@ def page(i, head, foot):
     body = f'''
     <section class="page-head">
       <div class="container">
-        <p class="crumbs"><a href="../federation.html" data-i18n="nav.federation">Federation</a> › {esc(name)}</p>
+        <p class="crumbs"><a href="../federation.html" data-i18n="nav.federation">Federation</a> › <a href="../federation.html#pref-{pref.lower()}">{pref}</a> › {esc(name)}</p>
         <h1>{esc(name)}</h1>
         <p class="intro" data-i18n="{kind_key}">{kind_en}</p>
       </div>
@@ -117,16 +176,9 @@ def page(i, head, foot):
     <section class="page-body">
       <div class="container sp-layout">
         <div>
-          <div class="sp-fed">
-            <strong data-i18n="sp.fedMember">Member of the ARM federation</strong>
-            <span><span data-i18n="sp.fedCount">ARM members from this community:</span> <span id="spMembers" class="sp-members">–</span></span>
-          </div>
+          {fed_html}{prov}
 {site_html}
-          <dl class="sp-facts">
-            <div><dt data-i18n="sp.pop">Population (2014 census)</dt><dd><span class="num" data-n="{pop}">{pop:,}</span></dd></div>
-            <div><dt data-i18n="sp.share">Share of the prefecture</dt><dd><span class="num" data-n="{share:.1f}" data-pct>{share:.1f}%</span></dd></div>
-            <div><dt data-i18n="sp.prefecture">Prefecture</dt><dd>Mamou</dd></div>
-            <div><dt data-i18n="sp.country">Country</dt><dd data-i18n="sp.guinea">Guinea</dd></div>
+          <dl class="sp-facts">{facts}
           </dl>
 
           <div class="sp-share">
@@ -146,7 +198,7 @@ def page(i, head, foot):
 
         <div class="sp-map">
           <iframe title="Map of {esc(name)}" loading="lazy" src="{map_src}"></iframe>
-          <p class="sp-source"><a href="{map_link}" target="_blank" rel="noopener" data-i18n="sp.bigMap">View larger map</a> · <span data-i18n="sp.source">Population: 2014 General Census (RGPH-3), Institut National de la Statistique de Guinée.</span></p>
+          <p class="sp-source"><a href="{map_link}" target="_blank" rel="noopener" data-i18n="sp.bigMap">View larger map</a> · {source}</p>
         </div>
       </div>
 
@@ -159,9 +211,9 @@ def page(i, head, foot):
               <a href="{slug(next_p[0])}.html">{esc(next_p[0])} ›</a>
             </p>
           </div>
-          <ul class="subpref-list">
+          <div class="sp-groups">
 {others}
-          </ul>
+          </div>
         </nav>
       </div>
     </section>
@@ -170,18 +222,34 @@ def page(i, head, foot):
 
 
 def about_grid():
-    """Rewrites the sub-prefecture list on federation.html so each item links to its page (and website)."""
+    """Rewrites the sub-prefecture list on federation.html, grouped by prefecture."""
     path = os.path.join(ROOT, "federation.html")
     html = open(path, encoding="utf-8").read()
-    items = []
-    for name, _, urban in PLACES:
-        label = '<span data-i18n="about.urban">Mamou (urban commune)</span>' if urban else esc(name)
-        site = WEBSITES.get(name)
-        extra = f'<a class="sp-ext" href="{site}" target="_blank" rel="noopener">{domain(site)} ↗</a>' if site else ""
-        count = f'<span class="sp-count" data-sp="{esc(name)}"></span>'
-        items.append("            <li" + (' class="is-center"' if urban else "") + f'><a href="mamou/{slug(name)}.html">{label}</a>{count}{extra}</li>')
-    new = '<ul class="subpref-list">\n' + "\n".join(items) + "\n          </ul>"
-    html = re.sub(r'<ul class="subpref-list">.*?</ul>', new, html, count=1, flags=re.S)
+    blocks = []
+    for p in PREFS:
+        items = []
+        for name, pp, _, urban in PLACES:
+            if pp != p:
+                continue
+            label = f'<span data-i18n="about.urban.{p}">{p} (urban commune)</span>' if urban else esc(name)
+            site = WEBSITES.get(name)
+            extra = f'<a class="sp-ext" href="{site}" target="_blank" rel="noopener">{domain(site)} ↗</a>' if site else ""
+            count = f'<span class="sp-count" data-sp="{esc(name)}"></span>'
+            items.append("              <li" + (' class="is-center"' if urban else "") + f'><a href="mamou/{slug(name)}.html">{label}</a>{count}{extra}</li>')
+        n = sum(1 for x in PLACES if x[1] == p)
+        tag = (f'<span class="pref-tag partner" data-i18n="fed.partner">Partner: own association in the USA</span>' if p in PARTNERS
+               else f'<span class="pref-tag" data-i18n="fed.provisional">List provisional</span>' if p in PROVISIONAL else "")
+        blocks.append(f'''          <section class="pref-block" id="pref-{p.lower()}">
+            <div class="pref-head"><h3><span data-i18n="sp.prefOf">Prefecture of</span> {p}</h3><span class="pref-n">{n} <span data-i18n="fed.subprefs">sub-prefectures</span></span>{tag}</div>
+            <ul class="subpref-list">
+{chr(10).join(items)}
+            </ul>
+          </section>''')
+    new = "<!-- SP-LIST (built by dev/build_subprefectures.py) -->\n" + "\n".join(blocks) + "\n          <!-- /SP-LIST -->"
+    if "<!-- SP-LIST" in html:
+        html = re.sub(r"<!-- SP-LIST.*?<!-- /SP-LIST -->", lambda m: new, html, count=1, flags=re.S)
+    else:
+        html = re.sub(r'<ul class="subpref-list">.*?</ul>', lambda m: new, html, count=1, flags=re.S)
     open(path, "w", encoding="utf-8").write(html)
 
 
@@ -194,7 +262,7 @@ def main():
         with open(os.path.join(OUT, s + ".html"), "w", encoding="utf-8") as f:
             f.write(html)
         print(f"mamou/{s}.html")
-    print(f"{len(PLACES)} pages, total population {TOTAL:,}")
+    print(f"{len(PLACES)} pages")
 
 
 if __name__ == "__main__":

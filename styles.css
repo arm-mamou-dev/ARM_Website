@@ -778,3 +778,17 @@ input[type="text"], input[type="tel"], input[type="password"], select, textarea 
   .page-body { padding-block: 36px 56px; }
   .panel { padding: 24px; }
 }
+
+/* Federation: sub-prefectures grouped by prefecture */
+.pref-block { margin-top: 36px; }
+.pref-block:first-of-type { margin-top: 8px; }
+.pref-head { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px 16px; padding-bottom: 12px; margin-bottom: 16px; border-bottom: 2px solid var(--navy); }
+.pref-head h3 { margin: 0; font-size: 1.2rem; }
+.pref-n { color: var(--text-3); font-size: 0.9rem; }
+.pref-tag { margin-left: auto; padding: 3px 10px; border-radius: 999px; font-size: 0.74rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; background: var(--pending-bg); color: var(--pending-fg); }
+.pref-tag.partner { background: var(--navy-tint); color: var(--navy); }
+.sp-groups { display: grid; gap: 24px; }
+.sp-group-title { font-size: 0.95rem; margin: 0 0 10px; color: var(--text-2); }
+.sp-partner { background: var(--navy-tint); }
+.sp-note { margin: 0 0 16px; font-size: 0.88rem; color: var(--text-3); }
+@media (max-width: 600px) { .pref-tag { margin-left: 0; } }
