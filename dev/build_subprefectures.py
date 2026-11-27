@@ -168,7 +168,7 @@ def page(i, head, foot):
     body = f'''
     <section class="page-head">
       <div class="container">
-        <p class="crumbs"><a href="../federation.html" data-i18n="nav.federation">Federation</a> › <a href="../federation.html#pref-{pref.lower()}">{pref}</a> › {esc(name)}</p>
+        <p class="crumbs"><a href="../index.html" data-i18n="nav.home">Home</a> › <a href="../federation.html" data-i18n="nav.federation">Federation</a> › <a href="../federation.html#pref-{pref.lower()}">{pref}</a> › {esc(name)}</p>
         <h1>{esc(name)}</h1>
         <p class="intro" data-i18n="{kind_key}">{kind_en}</p>
       </div>
@@ -260,6 +260,7 @@ def about_grid():
             <li data-i18n="fed.lvl.sp">Sub-prefecture</li>
             <li data-i18n="fed.lvl.dist">District</li>
           </ol>
+          <p class="t-jump"><span data-i18n="fed.jump">Go to:</span> {" ".join(f'<a href="#pref-{x.lower()}">{x}</a>' for x in PREFS)}</p>
           <div class="tree">
             <div class="t-node t-root">
               <span class="t-level" data-i18n="fed.lvl.region">Region</span>
