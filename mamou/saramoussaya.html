@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Saramoussaya – ARM Mamou</title>
   <meta name="description" content="Saramoussaya: sub-prefecture of Mamou, Guinea. Population 23,216 (2014 census).">
-  <meta name="theme-color" content="#2c4170">
+  <meta name="theme-color" content="#0f2d52">
   <link rel="icon" type="image/png" sizes="48x48" href="/images/favicon-48.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png">
   <link rel="apple-touch-icon" href="/images/arm-logo-180.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css?v=20261126">
 </head>
 <body data-page="federation" data-sp="Saramoussaya">
   <a class="skip-link" href="#main" data-i18n="nav.skip">Skip to content</a>
@@ -119,25 +119,42 @@
   </main>
 
   <footer class="site-footer">
-    <div class="container footer-inner">
-      <div class="footer-org">
-        <img class="footer-logo" src="/images/arm-logo.png" alt="" width="30" height="28">
-        <span>© <span id="year"></span> Association Des Ressortissants de Mamou</span>
+    <div class="container ft-grid">
+      <div class="ft-brand">
+        <a href="../index.html" class="ft-logo-row">
+          <img class="footer-logo" src="/images/arm-logo.png" alt="" width="40" height="37">
+          <strong>ARM Mamou</strong>
+        </a>
+        <p data-i18n="ft.about">The association of people from the Mamou region living in the United States: Mamou, Timbo, Dalaba and Pita.</p>
       </div>
-      <nav class="footer-links" aria-label="Footer">
+      <nav class="ft-col" aria-label="Association">
+        <h2 data-i18n="ft.org">Association</h2>
         <a href="../about.html" data-i18n="nav.about">About</a>
         <a href="../federation.html" data-i18n="nav.federation">Federation</a>
         <a href="../projects.html" data-i18n="nav.projects">Projects</a>
         <a href="../calendar.html" data-i18n="nav.calendar">Calendar</a>
-        <a href="../faq.html" data-i18n="nav.faq">FAQ</a>
-        <a href="../member.html" data-i18n="nav.login">Member login</a>
+      </nav>
+      <nav class="ft-col" aria-label="Members">
+        <h2 data-i18n="ft.members">Members</h2>
         <a href="../register.html" data-i18n="nav.register">Register</a>
+        <a href="../member.html" data-i18n="ft.status">Check my status</a>
+        <a href="../faq.html" data-i18n="nav.faq">FAQ</a>
         <a href="../admin.html" data-i18n="nav.admin">Admin</a>
       </nav>
+      <div class="ft-col">
+        <h2 data-i18n="ft.contact">Contact</h2>
+        <p data-i18n="ft.contactText">For any question, contact ARM leadership through the association's WhatsApp groups.</p>
+      </div>
+    </div>
+    <div class="ft-bottom">
+      <div class="container ft-bottom-inner">
+        <span>&copy; <span id="year"></span> Association Des Ressortissants de Mamou</span>
+        <span data-i18n="ft.legal">Member information stays private and is never published on this site.</span>
+      </div>
     </div>
   </footer>
 
-  <script src="../config.js"></script>
-  <script src="../script.js"></script>
+  <script src="../config.js?v=20261126"></script>
+  <script src="../script.js?v=20261126"></script>
 </body>
 </html>

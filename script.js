@@ -23,6 +23,60 @@
   // ---------------------------------------------------------
   const FR = {
     "nav.skip": "Aller au contenu",
+    "hx.eyebrow": "Association Des Ressortissants de Mamou · États-Unis",
+    "hx.title": "Ensemble, construisons un Mamou plus fort.",
+    "hx.lead": "L'ARM rassemble les ressortissants de la région de Mamou vivant aux États-Unis. En devenant membre, vous participez à nos projets pour l'éducation, la terre et une maison pour notre communauté, avec une transparence totale sur chaque dollar.",
+    "hx.login": "Espace membre",
+    "hx.note": "Inscription gratuite · environ une minute · en français et en anglais",
+    "hx.cardName": "Votre nom",
+    "stat.members": "Membres inscrits",
+    "stat.prefs": "Préfectures de la région de Mamou",
+    "stat.subprefs": "Sous-préfectures représentées",
+    "stat.projects": "Projets communautaires en cours",
+    "why.eyebrow": "Ce que fait l'ARM",
+    "why.title": "Une communauté, au service de Mamou",
+    "why.f1.t": "Unir nos ressortissants",
+    "why.f1.d": "Les familles de chaque sous-préfecture de la région de Mamou, réunies dans une seule association, avec une seule voix.",
+    "why.f2.t": "Investir à Mamou",
+    "why.f2.d": "L'éducation de nos enfants, des terres pour la communauté et un bâtiment à nous : des projets que les membres peuvent voir et suivre.",
+    "why.f3.t": "Chaque dollar justifié",
+    "why.f3.d": "Des comptes bancaires séparés avec deux signataires, des rapports mensuels aux membres et une vérification externe des comptes chaque année.",
+    "how.eyebrow": "Comment devenir membre",
+    "how.title": "Devenez membre en trois étapes",
+    "how.lead": "L'inscription est gratuite. Votre numéro de membre donne accès à votre carte, à votre statut et aux projets que vous soutenez.",
+    "how.s1.t": "Inscrivez-vous en ligne",
+    "how.s1.d": "Indiquez votre nom, votre téléphone, votre État et votre sous-préfecture d'origine. Cela prend environ une minute.",
+    "how.s2.t": "Recevez votre carte de membre",
+    "how.s2.d": "Vous recevez tout de suite votre numéro de membre, avec une carte indiquant votre préfecture, votre district et votre État.",
+    "how.s3.t": "Participez",
+    "how.s3.d": "Le bureau confirme votre adhésion. Ensuite, venez aux réunions, soutenez les projets et suivez nos progrès.",
+    "proj.eyebrow": "Nos projets",
+    "proj.title": "Où va votre soutien",
+    "proj.all": "Voir tous les projets",
+    "proj.more": "En savoir plus",
+    "proj.p1.tag": "Bâtiment",
+    "proj.p1.t": "Une maison pour notre communauté",
+    "proj.p1.d": "L'achat d'un bâtiment pour les réunions, les événements et des revenus locatifs, détenu ensemble par l'ARM et ses membres.",
+    "proj.p2.tag": "Éducation",
+    "proj.p2.t": "L'éducation à Mamou",
+    "proj.p2.d": "Cours de révision, fascicules et prix dans les écoles partenaires pour aider les élèves à réussir leurs examens nationaux.",
+    "proj.p3.tag": "Terre",
+    "proj.p3.t": "Des terres pour la communauté",
+    "proj.p3.d": "Des parcelles enregistrées au nom de l'ARM et mises en valeur pour des revenus durables à Mamou.",
+    "ev.eyebrow": "Calendrier",
+    "ev.title": "Événements à venir",
+    "ev.all": "Tout le calendrier",
+    "ev.loading": "Chargement des événements…",
+    "cta.title": "Rejoignez la famille ARM dès aujourd'hui",
+    "cta.text": "Inscrivez-vous en une minute et recevez votre carte de membre. Votre adhésion renforce chaque projet.",
+    "cta.faq": "Des questions ? Lisez la FAQ",
+    "ft.about": "L'association des ressortissants de la région de Mamou vivant aux États-Unis : Mamou, Timbo, Dalaba et Pita.",
+    "ft.org": "L'association",
+    "ft.members": "Membres",
+    "ft.contact": "Nous joindre",
+    "ft.contactText": "Pour toute question, contactez le bureau de l'ARM par les groupes WhatsApp de l'association.",
+    "ft.status": "Vérifier mon statut",
+    "ft.legal": "Les informations des membres restent privées et ne sont jamais publiées sur ce site.",
     "nav.home": "Accueil",
     "nav.about": "À propos",
     "nav.faq": "FAQ",
@@ -573,18 +627,43 @@
   }
 
   // ---------------------------------------------------------
-  // Home: member count
+  // Home: live member count and the next events from the calendar
   // ---------------------------------------------------------
-  if (PAGE === "home" && API) {
-    let count = null;
+  if (PAGE === "home") {
+    const loc = () => (lang === "fr" ? "fr-FR" : "en-US");
+    let count = null, events = null;
+    const evEl = $("#homeEvents");
+    const day = (iso) => { const [y, m, d] = iso.split("-").map(Number); return new Date(y, m - 1, d); };
+    const today = (() => { const n = new Date(); return [n.getFullYear(), String(n.getMonth() + 1).padStart(2, "0"), String(n.getDate()).padStart(2, "0")].join("-"); })();
+    const TYPES = { fr: { "General Assembly": "Assemblée générale", Event: "Événement", Fundraiser: "Collecte de fonds", Meeting: "Réunion", Deadline: "Échéance", Other: "Autre" } };
     const show = () => {
-      if (!count) return;
-      const el = $("#heroCount");
-      el.innerHTML = msg().count(count.toLocaleString(lang === "fr" ? "fr-FR" : "en-US"));
-      el.hidden = false;
+      if (count !== null) $("#statMembers").textContent = count.toLocaleString(loc());
+      if (events === null || !evEl) return;
+      const next = (events || []).filter((e) => e.date >= today && e.status !== "Cancelled").slice(0, 3);
+      if (!next.length) {
+        evEl.innerHTML = `<li class="ev-empty muted">${lang === "fr" ? "Aucun événement à venir pour le moment. Revenez bientôt." : "No upcoming events yet. Check back soon."}</li>`;
+        return;
+      }
+      evEl.innerHTML = next.map((e) => {
+        const d = day(e.date);
+        const type = (lang === "fr" && TYPES.fr[e.type]) || e.type || "";
+        return `<li class="ev">
+          <div class="ev-date"><span>${esc(d.toLocaleDateString(loc(), { month: "short" }))}</span><strong>${d.getDate()}</strong></div>
+          <div class="ev-body">
+            <p class="ev-type">${esc(type)}</p>
+            <h3>${esc(e.title)}</h3>
+            <p class="ev-when">${esc(d.toLocaleDateString(loc(), { weekday: "long", year: "numeric", month: "long", day: "numeric" }))}${e.location ? " · " + esc(e.location) : ""}</p>
+          </div>
+        </li>`;
+      }).join("");
     };
     rerender.push(show);
-    fetch(API).then((r) => r.json()).then((d) => { count = Number(d.count) || 0; show(); }).catch(() => {});
+    if (API) {
+      fetch(API).then((r) => r.json()).then((d) => { count = Number(d.count) || 0; show(); }).catch(() => {});
+      fetch(API + (API.includes("?") ? "&" : "?") + "action=calendar").then((r) => r.json())
+        .then((d) => { events = d.status === "ok" ? d.events || [] : []; show(); })
+        .catch(() => { events = []; show(); });
+    } else { events = []; show(); }
   }
 
   // ---------------------------------------------------------
